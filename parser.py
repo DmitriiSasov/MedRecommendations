@@ -152,7 +152,7 @@ def get_diagnosys_theses(browser):
                 theses_dict[current_header] = []
         elif current_element.name == "ul":
             attrs_count = len(current_element.attrs.keys())
-            if attrs_count == 0:
+            if attrs_count == 0 or not current_element.attrs.keys().__contains__("type"):
                 theses_text = current_element.text
                 if new_theses is None:
                     new_theses = Thesis()
