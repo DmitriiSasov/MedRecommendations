@@ -92,11 +92,13 @@ def get_MKBs(browser):
     return str(mkbs.text).split('/')
 
 def get_LCR(text):
-    if text.__contains__("УУР") or text.__contains__("Уровень убедительности рекомендаций"):
+    if text.__contains__("УУР") or text.__contains__("Уровень убедительности рекомендаций") or\
+            text.__contains__("рекомендаций") and text.__contains__("доказательств"):
         if text.__contains__("УУР"):
             substr = text[text.find("УУР") + 3: text.find(",")]
-        elif text.__contains__("Уровень убедительности рекомендаций"):
+        else:
             substr = text[text.find("рекомендаций") + 12: text.find("(")]
+
         for char in substr:
             if char.isalpha() and char.isupper():
                 return char
@@ -104,17 +106,18 @@ def get_LCR(text):
         return ""
 
 def get_LRE(text):
-    if text.__contains__("УДД") or text.__contains__("уровень достоверности доказательств"):
+    result = ""
+    if text.__contains__("УДД") or text.__contains__("уровень достоверности доказательств") or\
+            text.__contains__("рекомендаций") and text.__contains__("доказательств"):
         if text.__contains__("УДД"):
             substr = text[text.find("УДД") + 3: text.find(")")]
-        elif text.__contains__("уровень достоверности доказательств"):
+        else:
             substr = text[text.find("доказательств") + 13: text.find(")")]
 
         for char in substr:
-            if char.isdigit():
-                return char
-    else:
-        return ""
+            if char.isdigit() or char == 'V' or char == 'I':
+                result += char
+    return result
 
 #browser - webdriver на котором открыта страница с документом, с которого можно считать MKB
 #return - словарь тезисов по темам
@@ -125,14 +128,14 @@ def get_diagnosys_theses(browser):
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     header_of_diagnosys_div = soup.find(id="doc_2")
-    len(header_of_diagnosys_div.attrs.keys())
     current_header = header_of_diagnosys_div.get_text()
     theses_dict[current_header] = []
     diagnosys_div = header_of_diagnosys_div.findParent()
     if diagnosys_div is None:
         return {}
 
-    all_elements_in_diag_div = list(diagnosys_div.recursiveChildGenerator())
+    all_elements_in_diag_div = list(list(diagnosys_div.findAll(True, recursive=False))[1].findChild().findAll(True, recursive=False))
+
     index = 0
     new_theses = None
     while index < len(all_elements_in_diag_div):
@@ -143,17 +146,17 @@ def get_diagnosys_theses(browser):
             if not theses_dict.keys().__contains__(current_header):
                 theses_dict[current_header] = []
         elif current_element.name == "ul": #list(current_element.recursiveChildGenerator())
-            inner_li_tags_count = len(current_element.findAll("li", recursive=False))
+            #inner_li_tags_count = len(current_element.findAll("li", recursive=False))
             attrs_count = len(current_element.attrs.keys())
-            if inner_li_tags_count == 1 and attrs_count == 0:
+            if attrs_count == 0: #inner_li_tags_count == 1
                 theses_text = current_element.text
                 if new_theses is None:
                     new_theses = Theses()
                     new_theses.text = theses_text
                 else:
                     new_theses.text += '\n' + theses_text
-                if index + 1 < len(all_elements_in_diag_div) and all_elements_in_diag_div[index + 5].name == "p":
-                    after_theses_tag = all_elements_in_diag_div[index + 5]
+                if index + 1 < len(all_elements_in_diag_div) and all_elements_in_diag_div[index + 1].name == "p":
+                    after_theses_tag = all_elements_in_diag_div[index + 1]
                     LCR = get_LCR(str(after_theses_tag.text))
                     LRE = get_LRE(str(after_theses_tag.text))
                     if LCR == "" or LRE == "":
@@ -164,13 +167,12 @@ def get_diagnosys_theses(browser):
                         theses_dict.get(current_header).append(new_theses)
                         new_theses = None
                 else:
-                    new_theses.LCR = "Отсутствует"
-                    new_theses.LRE = "Отсутствует"
-                    theses_dict.get(current_header).append(new_theses)
+                    #new_theses.LCR = "Отсутствует"
+                    #new_theses.LRE = "Отсутствует"
+                    #theses_dict.get(current_header).append(new_theses)
                     new_theses = None
         index += 1
 
-    print(theses_dict)
     return theses_dict
     #находим заголовок внутри блока диагностики и передаем родительский блок
 
@@ -183,7 +185,13 @@ def get_recommdendation_info(browser):
     recommendation.MKBs = get_MKBs(browser)
     print(recommendation.MKBs)
     recommendation.diagnosticTheses = get_diagnosys_theses(browser)
-
+    for key in recommendation.diagnosticTheses.keys():
+        print(key)
+        for element in recommendation.diagnosticTheses[key]:
+            print(element.text)
+            print(element.LCR)
+            print(element.LRE)
+        print("\n")
 
     #recommendation.diagnosticTheses = get_diagnosys_theses(browser)
     #print(recommendation.diagnosticTheses)
