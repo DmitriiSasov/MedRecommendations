@@ -9,7 +9,7 @@ class Recommendation:
     diagnosticTheses = {}
 
     #Словарь (название группы тезисов : список тезисов) тезисов, относящихся к медикаментозному лечению (может быть пустым!!!) (список объектов класса Theses)
-    treatmentTheses = {}
+    treatmentTheses = []
 
     #Критерии оценки качества медицинской помощи (каждый из перечисленных ниже пунктов может быть пустым )
 
@@ -29,7 +29,7 @@ class Recommendation:
     ensuringContinuityDefects = []
 
 
-class Theses:
+class Thesis:
 
     #Текст тезиса
     text = ""
