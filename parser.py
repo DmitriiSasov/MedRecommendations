@@ -195,11 +195,11 @@ def get_treatment_tags(browser):
     index = 0
     tags = []
     for tag in all_tags:
-        if first_tag_index != 1 and tag.name == "h2":
+        if first_tag_index != -1 and tag.name == "h2":
             last_tag_index = index
         if tag.name == "h2" and tag.text.__contains__("Медикаментозная терапия"):
             first_tag_index = index
-        if first_tag_index != 1 and last_tag_index == -1:
+        if first_tag_index != -1 and last_tag_index == -1:
             tags.append(tag)
         index += 1
     return tags
@@ -257,17 +257,17 @@ def get_recommdendation_info(browser):
             print(element.LCR)
             print(element.LRE)
         print("\n")
-    """recommendation.treatmentTheses = get_treatment_theses(browser)
+    recommendation.treatmentTheses = get_treatment_theses(browser)
     for key in recommendation.treatmentTheses.keys():
         print(key)
         for element in recommendation.treatmentTheses[key]:
             print(element.text)
             print(element.LCR)
             print(element.LRE)
-        print("\n")"""
+        print("\n")
 
 
 browser = webdriver.Chrome('chromedriver.exe')
 browser.implicitly_wait(30)
-go_to_recommendation_page(browser, 'h80')
+go_to_recommendation_page(browser, 'i10')
 get_recommdendation_info(browser)
