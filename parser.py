@@ -80,8 +80,8 @@ def get_recommendation_page_url(browser, nosology_id):
 # return - список кодов МКБ
 def get_MKBs(browser):
     try:
-        WebDriverWait(browser, 10).until(ec.visibility_of_element_located((By.ID, "mkb")))
-        mkbs = browser.find_element_by_id('mkb')
+        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        mkbs = soup.find(id='mkb')
     except NoSuchElementException:
         print("Коды МКБ отсутствуют")
         return []
@@ -89,7 +89,7 @@ def get_MKBs(browser):
         print("Коды МКБ отсутствуют")
         return []
 
-    return str(mkbs.text).split('/')
+    return mkbs.text.split('/')
 
 
 def get_LCR(text):
