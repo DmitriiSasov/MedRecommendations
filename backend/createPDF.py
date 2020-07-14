@@ -1,7 +1,8 @@
 import os
-from fpdf import FPDF, HTMLMixin
+from fpdf import FPDF
+from pdfrw import PdfReader, PdfWriter
+import pdfkit
 import re
-#from html2pdf import HTMLToPDF
 
 # А - 0, 176, 80
 # B - 147, 208, 125
@@ -15,64 +16,54 @@ import re
 # 5 (мой вариант) - 100, 117, 140
 
 
-class HTML2PDF(FPDF, HTMLMixin):
-    pass
+pdf = FPDF(orientation='P', unit='mm', format='A4')
 
 
-pdf = HTML2PDF(orientation='P', unit='mm', format='A4')
+def create_pdf():
+    # pdf.add_font('times', '', 'times.ttf', uni=True)
+    # pdf.add_font('timesbd', '', 'timesbd.ttf', uni=True)
+    # pdf.add_font('timesi', '', 'timesi.ttf', uni=True)
+    #
+    # pdf.add_page()
+    # pdf.set_font('timesbd', size=22)
+    # pdf.cell(200, 20, txt='Клинические рекомендации', ln=1, align='C')
+    # pdf.set_font('timesbd', size=18)
+    # pdf.ln(30)
+    # nozology = recommendation.nozology_name
+    # mkbs = ''
+    # for code in recommendation.MKBs:
+    #     mkbs += code.toUpper()+', '
+    # mkbs.rstrip()
+    # pdf.cell(200, 10, txt='Нозологии: ')
+    # pdf.set_font('times', size=18)
+    # pdf.cell(200, 10, txt=nozology+' ('+mkbs+')')
+    #
+    # pdf.add_page()
+    # pdf.set_font('timesbd', size=22)
+    # pdf.cell(200, 10, txt='Оглавление', ln=1)
+    # pdf.set_font('times', size=18)
+    # pdf.cell(200, 10, txt='• Диагностика', ln=1)
+    # pdf.cell(200, 10, txt='• Лечение', ln=1)
+    # pdf.cell(200, 10, txt='• Критерии оценки качества медицинской помощи', ln=1)
+    #
+    # pdf.add_page()
+    #
+    # make_diagnostics(recommendation.diagnosticTheses)
+    # pdf.ln()
+    # make_treatment(recommendation.treatmentTheses)
+    # pdf.ln()
+    #
+    # pdf.add_page()
+    # pdf.set_font('timesbd', size=22)
+    # pdf.cell(200, 10, txt='Критерии оценки качества медицинской помощи', ln=1)
+    # pdf.ln()
+    #
+    # pdf.output('document.pdf')
+    #
+    # document = PdfReader('document.pdf', decompress=False).pages
 
-
-def create_pdf(recommendation):
-    pdf.add_font('times', '', 'times.ttf', uni=True)
-    pdf.add_font('timesbd', '', 'timesbd.ttf', uni=True)
-    pdf.add_font('timesi', '', 'timesi.ttf', uni=True)
-
-    pdf.add_page()
-    pdf.set_font('timesbd', size=22)
-    pdf.cell(200, 20, txt='Клинические рекомендации', ln=1, align='C')
-    pdf.set_font('timesbd', size=18)
-    pdf.ln(30)
-    nozology = recommendation.nozology_name
-    mkbs = ''
-    for code in recommendation.MKBs:
-        mkbs += code.toUpper()+', '
-    mkbs.rstrip()
-    pdf.cell(200, 10, txt='Нозологии: ')
-    pdf.set_font('times', size=18)
-    pdf.cell(200, 10, txt=nozology+' ('+mkbs+')')
-
-
-
-    pdf.add_page()
-    pdf.set_font('timesbd', size=22)
-    pdf.cell(200, 10, txt='Оглавление', ln=1)
-    pdf.set_font('times', size=18)
-    pdf.cell(200, 10, txt='• Диагностика', ln=1)
-    pdf.cell(200, 10, txt='• Лечение', ln=1)
-    pdf.cell(200, 10, txt='• Критерии оценки качества медицинской помощи', ln=1)
-
-    pdf.add_page()
-
-    make_diagnostics(recommendation.diagnosticTheses)
-    pdf.ln()
-    make_treatment(recommendation.treatmentTheses)
-    pdf.ln()
-
-    if pdf.get_y() > 100:
-        pdf.add_page()
-
-    pdf.set_font('timesbd', size=22)
-    pdf.cell(200, 10, txt='Критерии оценки качества медицинской помощи', ln=1)
-    pdf.ln()
-
-    html = """<table border="0" align="center" width="50%">
-    <thead><tr><th width="30%">Header 1</th><th width="70%">header 2</th></tr></thead>
-    <tbody>
-    <tr><td>cell 1</td><td>cell 2</td></tr>
-    <tr><td>cell 2</td><td>cell 3</td></tr>
-    </tbody>
-    </table>"""
-    table = '<table border="0" cellpadding="0" cellspacing="0"> <tr> <td> <p>№</p> </td> <td> ' \
+    table = '<head> <meta charset="utf-8"> </head>'\
+            '<table border="0" cellpadding="0" cellspacing="0"> <tr> <td> <p>№</p> </td> <td> ' \
             '<p><strong>Критерии качества</strong></p> </td> <td> <p><strong>Уровень достоверности ' \
             'доказательств</strong></p> </td> <td valign="top"> <p><strong>Уровень убедительности ' \
             'рекомендаций</strong></p> </td> </tr> <tr class="marker-5"> <td> <p>1.</p> </td> <td> <p><span ' \
@@ -89,11 +80,20 @@ def create_pdf(recommendation):
             '<p>6.</p> </td> <td> <p>Выполнена акустическая импедансометрия при постановке диагноза <span ' \
             'class="founded-marker-close marker-5"></span></p> </td> <td nowrap="nowrap"> <p>IV</p> </td> <td ' \
             'valign="top"> <p>С</p></td></tr></table> '
-    #pdf.write_html(table)
-    #make_criteria(recommendation.table_tag)
 
-    pdf.output('newGuide.pdf')
-    os.system('newGuide.pdf')
+    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+
+    pdfkit.from_string(table, 'criteria.pdf', configuration=config)
+
+    #criteria_page = PdfReader('criteria.pdf', decompress=False).pages
+
+    #writer = PdfWriter()
+    #writer.addpages(document)
+    #writer.addpages(criteria_page)
+    #writer.write('newGuide.pdf')
+
+    os.system('criteria.pdf')
 
 
 def make_thesis(element):
@@ -182,4 +182,6 @@ def make_treatment(dictionary):
 
 def make_criteria(table):
     pdf.write_html(table)
+
+create_pdf()
 
