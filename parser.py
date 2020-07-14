@@ -199,13 +199,13 @@ def get_diagnosys_theses(browser):
 def get_treatment_tags(browser):
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
-    header_of_diagnosys_div = soup.find(id="doc_3")
-    diagnosys_div = header_of_diagnosys_div.findParent()
-    if diagnosys_div is None:
+    header_of_treatment_div = soup.find(id="doc_3")
+    treatment_div = header_of_treatment_div.findParent()
+    if treatment_div is None:
         return {}
 
     all_tags = list(
-        list(diagnosys_div.findAll(True, recursive=False))[1].findChild().findAll(True, recursive=False))
+        list(treatment_div.findAll(True, recursive=False))[1].findChild().findAll(True, recursive=False))
 
     first_tag_index = -1
     last_tag_index = -1
@@ -306,6 +306,6 @@ def get_recommdendation_info(browser):
 
 browser = webdriver.Chrome('chromedriver.exe')
 browser.implicitly_wait(30)
-go_to_recommendation_page(browser, 'e10')
+go_to_recommendation_page(browser, 'i10')
 get_recommdendation_info(browser)
 browser.close()
