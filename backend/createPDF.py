@@ -14,13 +14,34 @@ import re
 # 5 - 68, 84, 106
 # 5 (мой вариант) - 100, 117, 140
 
-pdf = FPDF(orientation='P', unit='mm', format='A4')
+
+class HTML2PDF(FPDF, HTMLMixin):
+    pass
+
+
+pdf = HTML2PDF(orientation='P', unit='mm', format='A4')
 
 
 def create_pdf(recommendation):
     pdf.add_font('times', '', 'times.ttf', uni=True)
     pdf.add_font('timesbd', '', 'timesbd.ttf', uni=True)
     pdf.add_font('timesi', '', 'timesi.ttf', uni=True)
+
+    pdf.add_page()
+    pdf.set_font('timesbd', size=22)
+    pdf.cell(200, 20, txt='Клинические рекомендации', ln=1, align='C')
+    pdf.set_font('timesbd', size=18)
+    pdf.ln(30)
+    nozology = recommendation.nozology_name
+    mkbs = ''
+    for code in recommendation.MKBs:
+        mkbs += code.toUpper()+', '
+    mkbs.rstrip()
+    pdf.cell(200, 10, txt='Нозологии: ')
+    pdf.set_font('times', size=18)
+    pdf.cell(200, 10, txt=nozology+' ('+mkbs+')')
+
+
 
     pdf.add_page()
     pdf.set_font('timesbd', size=22)
@@ -44,7 +65,32 @@ def create_pdf(recommendation):
     pdf.cell(200, 10, txt='Критерии оценки качества медицинской помощи', ln=1)
     pdf.ln()
 
-    make_criteria(recommendation.anamnesisCollectionDefects)
+    html = """<table border="0" align="center" width="50%">
+    <thead><tr><th width="30%">Header 1</th><th width="70%">header 2</th></tr></thead>
+    <tbody>
+    <tr><td>cell 1</td><td>cell 2</td></tr>
+    <tr><td>cell 2</td><td>cell 3</td></tr>
+    </tbody>
+    </table>"""
+    table = '<table border="0" cellpadding="0" cellspacing="0"> <tr> <td> <p>№</p> </td> <td> ' \
+            '<p><strong>Критерии качества</strong></p> </td> <td> <p><strong>Уровень достоверности ' \
+            'доказательств</strong></p> </td> <td valign="top"> <p><strong>Уровень убедительности ' \
+            'рекомендаций</strong></p> </td> </tr> <tr class="marker-5"> <td> <p>1.</p> </td> <td> <p><span ' \
+            'class="marker-5"></span> Выполнена отомикроскопия и/или отоэндоскопия при постановке диагноза</p> </td> ' \
+            '<td nowrap="nowrap"> <p>IV</p> </td> <td valign="top"> <p>С</p> </td> </tr> <tr class="marker-5"> <td> ' \
+            '<p>2.</p> </td> <td> <p>Выпонено исследование органа слуха с помощью камертонов при постановке ' \
+            'диагноза</p> </td> <td nowrap="nowrap"> <p>IV</p> </td> <td valign="top"> <p>С</p> </td> </tr> <tr ' \
+            'class="marker-5"> <td> <p>3.</p> </td> <td> <p>Выполнена речевая аудиометрия при постановке диагноза</p> ' \
+            '</td> <td nowrap="nowrap"> <p>IV</p> </td> <td valign="top"> <p>С</p> </td> </tr> <tr class="marker-5"> ' \
+            '<td> <p>4.</p> </td> <td> <p>Выполнено составление слухового паспорта при постановке диагноза</p> </td> ' \
+            '<td nowrap="nowrap"> <p>IV</p> </td> <td valign="top"> <p>С</p> </td> </tr> <tr class="marker-5"> <td> ' \
+            '<p>5.</p> </td> <td> <p>Выполнена тональная пороговая аудиометрия при диагноза диагноза</p> </td> <td ' \
+            'nowrap="nowrap"> <p>IV</p> </td> <td valign="top"> <p>С</p> </td> </tr> <tr class="marker-5"> <td> ' \
+            '<p>6.</p> </td> <td> <p>Выполнена акустическая импедансометрия при постановке диагноза <span ' \
+            'class="founded-marker-close marker-5"></span></p> </td> <td nowrap="nowrap"> <p>IV</p> </td> <td ' \
+            'valign="top"> <p>С</p></td></tr></table> '
+    #pdf.write_html(table)
+    #make_criteria(recommendation.table_tag)
 
     pdf.output('newGuide.pdf')
     os.system('newGuide.pdf')
@@ -134,13 +180,6 @@ def make_treatment(dictionary):
     pdf.ln(10)
 
 
-def make_criteria(dictionary):
-    pdf.set_font('timesi', size=16)
-    pdf.ln(7)
-    for element in dictionary:
-        text_thesis = '• ' + element
-        text_thesis = text_thesis.replace('й', 'й')
-        pdf.multi_cell(0, 6, txt=text_thesis)
-        pdf.ln(5)
+def make_criteria(table):
+    pdf.write_html(table)
 
-    pdf.ln(10)

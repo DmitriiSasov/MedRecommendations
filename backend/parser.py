@@ -76,6 +76,22 @@ def get_recommendation_page_url(browser, nosology_id):
     print(newHref)
     return newHref
 
+# browser - webdriver на котором открыта страница с документом, с рекомендациям
+# return - название нозологии
+def get_nozology_name(browser):
+    try:
+        browser.find_element_by_id('mkb')
+        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        name = soup.find('div', {'class': 'main-text'}).find('h1', {'class': 'ng-binding'})
+    except NoSuchElementException:
+        print("Название болезни отсуствует")
+        return ""
+    except TimeoutException:
+        print("Название болезни отсуствует")
+        return ""
+
+    return name.text
+
 
 # browser - webdriver на котором открыта страница с документом, с которого можно считать MKB
 # return - список кодов МКБ
@@ -184,13 +200,13 @@ def get_diagnosys_theses(browser):
 def get_treatment_tags(browser):
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
-    header_of_diagnosys_div = soup.find(id="doc_3")
-    diagnosys_div = header_of_diagnosys_div.findParent()
-    if diagnosys_div is None:
+    header_of_treatment_div = soup.find(id="doc_3")
+    treatment_div = header_of_treatment_div.findParent()
+    if treatment_div is None:
         return {}
 
     all_tags = list(
-        list(diagnosys_div.findAll(True, recursive=False))[1].findChild().findAll(True, recursive=False))
+        list(treatment_div.findAll(True, recursive=False))[1].findChild().findAll(True, recursive=False))
 
     first_tag_index = -1
     last_tag_index = -1
@@ -245,10 +261,29 @@ def get_treatment_theses(browser):
     return theses_list
 
 
+def find_criteria_for_evaluating_div(browser):
+    html = browser.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    header_of_criteria_div = soup.find(id="doc_criteria")
+    criteria_div = header_of_criteria_div.findParent()
+    return criteria_div
+
+
+def get_criteria_for_evaluating(browser):
+    criteria_div = find_criteria_for_evaluating_div(browser)
+    if criteria_div is None:
+        return ""
+
+    table_tag = str(criteria_div.find('table'))
+    return table_tag
+
+
 # browser - webdriver на котором открыта страница с документом, с которого можно считать MKB
 # return - объект Recommendation
 def get_recommdendation_info(browser):
     recommendation = Recommendation()
+    recommendation.nozology_name = get_nozology_name(browser)
+    print(recommendation.nozology_name)
     recommendation.MKBs = get_MKBs(browser)
     print(recommendation.MKBs)
     recommendation.diagnosticTheses = get_diagnosys_theses(browser)
@@ -265,13 +300,15 @@ def get_recommdendation_info(browser):
         print(element.LCR)
         print(element.LRE)
         print("\n")
+    recommendation.table_tag = get_criteria_for_evaluating(browser)
+    print(recommendation.table_tag)
 
     return recommendation
 
 
 browser = webdriver.Chrome('chromedriver.exe')
 browser.implicitly_wait(30)
-go_to_recommendation_page(browser, 'h80')
+go_to_recommendation_page(browser, 'i10')
 rec = get_recommdendation_info(browser)
 browser.close()
 
