@@ -2,6 +2,8 @@
 
 class Recommendation:
 
+    nozology_name = ""
+
     #Все коды МКБ-10 из нозологии в виде строк
     MKBs = []
 

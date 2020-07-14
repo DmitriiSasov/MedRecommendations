@@ -75,6 +75,22 @@ def get_recommendation_page_url(browser, nosology_id):
     print(newHref)
     return newHref
 
+# browser - webdriver на котором открыта страница с документом, с рекомендациям
+# return - название нозологии
+def get_nozology_name(browser):
+    try:
+        browser.find_element_by_id('mkb')
+        soup = BeautifulSoup(browser.page_source, 'html.parser')
+        name = soup.find('div', {'class': 'main-text'}).find('h1', {'class': 'ng-binding'})
+    except NoSuchElementException:
+        print("Название болезни отсуствует")
+        return ""
+    except TimeoutException:
+        print("Название болезни отсуствует")
+        return ""
+
+    return name.text
+
 
 # browser - webdriver на котором открыта страница с документом, с которого можно считать MKB
 # return - список кодов МКБ
@@ -244,10 +260,14 @@ def get_treatment_theses(browser):
     return theses_list
 
 
+
+
 # browser - webdriver на котором открыта страница с документом, с которого можно считать MKB
 # return - объект Recommendation
 def get_recommdendation_info(browser):
     recommendation = Recommendation()
+    recommendation.nozology_name = get_nozology_name(browser)
+    print(recommendation.nozology_name)
     recommendation.MKBs = get_MKBs(browser)
     print(recommendation.MKBs)
     recommendation.diagnosticTheses = get_diagnosys_theses(browser)
@@ -270,6 +290,6 @@ def get_recommdendation_info(browser):
 
 browser = webdriver.Chrome('chromedriver.exe')
 browser.implicitly_wait(30)
-go_to_recommendation_page(browser, 'i10')
+go_to_recommendation_page(browser, 'e10')
 get_recommdendation_info(browser)
 browser.close()
