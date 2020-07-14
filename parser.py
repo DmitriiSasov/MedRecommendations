@@ -80,6 +80,7 @@ def get_recommendation_page_url(browser, nosology_id):
 # return - список кодов МКБ
 def get_MKBs(browser):
     try:
+        browser.find_element_by_id('mkb')
         soup = BeautifulSoup(browser.page_source, 'html.parser')
         mkbs = soup.find(id='mkb')
     except NoSuchElementException:
