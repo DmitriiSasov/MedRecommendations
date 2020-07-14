@@ -260,6 +260,21 @@ def get_treatment_theses(browser):
     return theses_list
 
 
+def find_criteria_for_evaluating_div(browser):
+    html = browser.page_source
+    soup = BeautifulSoup(html, 'html.parser')
+    header_of_criteria_div = soup.find(id="doc_criteria")
+    criteria_div = header_of_criteria_div.findParent()
+    return criteria_div
+
+
+def get_criteria_for_evaluating(browser):
+    criteria_div = find_criteria_for_evaluating_div(browser)
+    if criteria_div is None:
+        return ""
+
+    table_tag = str(criteria_div.find('table'))
+    return table_tag
 
 
 # browser - webdriver на котором открыта страница с документом, с которого можно считать MKB
@@ -284,7 +299,8 @@ def get_recommdendation_info(browser):
         print(element.LCR)
         print(element.LRE)
         print("\n")
-
+    recommendation.table_tag = get_criteria_for_evaluating(browser)
+    print(recommendation.table_tag)
     return recommendation
 
 
