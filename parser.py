@@ -258,16 +258,17 @@ def get_recommdendation_info(browser):
             print(element.LRE)
         print("\n")
     recommendation.treatmentTheses = get_treatment_theses(browser)
-    for key in recommendation.treatmentTheses.keys():
-        print(key)
-        for element in recommendation.treatmentTheses[key]:
-            print(element.text)
-            print(element.LCR)
-            print(element.LRE)
+    for element in recommendation.treatmentTheses:
+        print(element.text)
+        print(element.LCR)
+        print(element.LRE)
         print("\n")
+
+    return recommendation
 
 
 browser = webdriver.Chrome('chromedriver.exe')
 browser.implicitly_wait(30)
 go_to_recommendation_page(browser, 'i10')
 get_recommdendation_info(browser)
+browser.close()
