@@ -47,6 +47,7 @@ def get_recommendation_page_url(browser, nosology_id):
     newHref = str(search_result[0].get_attribute('href'))
     newHref = newHref.replace('recomend', 'schema')
     print(newHref)
+    search_area.clear()
     return newHref
 
 
