@@ -2,53 +2,27 @@ from bs4 import BeautifulSoup
 from selenium import webdriver
 from data_structures import Recommendation
 from data_structures import Thesis
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.common.by import By
 import time
 
 URL = 'http://cr.rosminzdrav.ru/#!/'
 
 
-class IllegalArgumentException(Exception):
-    pass
-
-
 # browser - webdriver
 # nosology_id - строка с идентификатором нозологии
 def go_to_recommendation_page(browser, nosology_id):
-    if nosology_id == "":
-        raise IllegalArgumentException("Идентификатор нозологии указан неверно")
-
-    browser.get(URL)
-    try:
-        search_area = browser.find_element_by_class_name("main-menu__search")
-    except NoSuchElementException:
-        print("Поиск по временно недоступен")
-        browser.close()
+    res = get_recommendation_page_url(browser, nosology_id)
+    if not res:
         return False
-
-    search_area.send_keys(nosology_id[:len(nosology_id) - 1])
-    time.sleep(1)
-    search_area.send_keys(nosology_id[len(nosology_id) - 1])
-    time.sleep(1)
-
-    try:
-        search_result = browser.find_elements_by_class_name('main-menu__search-result-item-text')
-    except NoSuchElementException:
-        print("Не удалось найти результат")
-        return False
-
-    newHref = str(search_result[0].get_attribute('href'))
-    newHref = newHref.replace('recomend', 'schema')
-    browser.get(newHref)
-    print(newHref)
+    else:
+        browser.get(res)
+        return True
 
 
 def get_recommendation_page_url(browser, nosology_id):
     if nosology_id == "":
-        raise IllegalArgumentException("Идентификатор нозологии указан неверно")
+        print("Идентификатор нозологии указан неверно")
+        return False
 
     browser.get(URL)
     try:
@@ -67,13 +41,14 @@ def get_recommendation_page_url(browser, nosology_id):
         search_result = browser.find_elements_by_class_name('main-menu__search-result-item-text')
     except NoSuchElementException:
         print("Не удалось найти результат")
+        browser.close()
         return False
 
     newHref = str(search_result[0].get_attribute('href'))
     newHref = newHref.replace('recomend', 'schema')
-    browser.get(newHref)
     print(newHref)
     return newHref
+
 
 # browser - webdriver на котором открыта страница с документом, с рекомендациям
 # return - название нозологии
@@ -303,9 +278,11 @@ def get_recommdendation_info(browser):
     print(recommendation.table_tag)
     return recommendation
 
-
-browser = webdriver.Chrome('chromedriver.exe')
-browser.implicitly_wait(30)
-go_to_recommendation_page(browser, 'i10')
-get_recommdendation_info(browser)
-browser.close()
+"""
+if __name__ == '__main__':
+    browser = webdriver.Chrome('chromedriver.exe')
+    browser.implicitly_wait(30)
+    if go_to_recommendation_page(browser, 'i10'):
+        get_recommdendation_info(browser)
+    browser.close()
+"""
