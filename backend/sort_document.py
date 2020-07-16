@@ -27,6 +27,8 @@ def get_criterias(recommendations):
 
 
 def sort(recommendations):
+    diagnostic_theses = {'Физикальное обследование': [], 'Лабораторная диагностика': [],
+                         'Инструментальная диагностика': [], 'Иные диагностические исследования': []}
     diag_thes = {}
     treatment_theses = []
     recommendation = []
@@ -40,13 +42,12 @@ def sort(recommendations):
                     or buff == 'Инструментальная диагностика' or buff == 'Иные диагностические исследования':
                 diag_thes[buff] = rec.diagnosticTheses[key]
 
-        diagnostic_theses = diag_thes.copy()
+        buff_dict = diag_thes.copy()
         for key, value in buff_dict.items():
             if key in diagnostic_theses:
                 diagnostic_theses[key] = diagnostic_theses.get(key, 0) + value
             else:
                 diagnostic_theses[key] = buff_dict.get(key, 0)
-        buff_dict = diag_thes.copy()
         diag_thes.clear()
         treatment_theses += rec.treatmentTheses
 

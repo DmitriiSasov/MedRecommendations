@@ -42,8 +42,9 @@ def create_pdf(recommendations):
             mkb += code + ', '
         mkb = mkb[0:-2]
 
-        pdf.cell(200, 10, txt=nosologies[i] + ' (' + mkb + ')')
-        pdf.ln(10)
+        pdf.multi_cell(0, 5, txt=nosologies[i] + ' (' + mkb + ')')
+        pdf.ln(5)
+        mkb = ''
 
     pdf.add_page()
     pdf.set_font('timesbd', size=22)
