@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify, request, render_template
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -43,7 +45,7 @@ def make_recommendation():
 
     doc_name = create_pdf(recommendations[0])
 
-    return render_template('pdf.php', url=doc_name)
+    return render_template(os.getcwd() + '\\pdf.php', url=doc_name)
 
 
 if __name__ == '__main__':

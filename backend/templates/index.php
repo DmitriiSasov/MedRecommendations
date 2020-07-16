@@ -17,10 +17,10 @@
     </div>
     <div class="container myshadow" style="background-color: #08e8de; width: 500pt;
     border-radius: 5pt; margin-top: 100pt">
-      <form class="" action="pdf.php" method="post">
+      <form class="" action="/search" method="post">
         <div class="form-group" style="padding: 15pt">
           <label for="codes_input" style="font-size: 16pt">Коды МКБ-10</label>
-          <input type="text" class="form-control" id="codes_input" style="font-size: 14pt;
+          <input type="text" name="search_req" class="form-control" id="codes_input" style="font-size: 14pt;
           margin-top: 5pt" placeholder="Введите коды МКБ-10">
           <button type="submit" class="btn btn-primary" style="margin-top: 35pt; font-size: 14pt">Сформировать документ</button>
         </div>

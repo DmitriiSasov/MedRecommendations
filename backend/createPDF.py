@@ -66,7 +66,7 @@ def create_pdf(recommendation):
             + recommendation.table_tag
     table = table.replace('border="0', 'border="1"')
 
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    path_wkhtmltopdf = r'wkhtmltopdf\bin\wkhtmltopdf.exe'
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
     pdfkit.from_string(table, 'criteria.pdf', configuration=config)
