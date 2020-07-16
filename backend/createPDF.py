@@ -77,11 +77,11 @@ def create_pdf(recommendation):
     writer.addpages(document)
     writer.addpages(criteria_page)
 
-    doc_name = 'doc_'+str(datetime.date.today())+'_'+str(datetime.time.hour)+'-'+str(datetime.time.minute)+'.pdf'
+    doc_name = 'doc_'+str(datetime.datetime.now().hour)+'_'+str(datetime.datetime.now().minute)+'_'+str(datetime.datetime.now().second)+'.pdf'
 
     writer.write(doc_name)
 
-    os.system(doc_name)
+    return doc_name
 
 
 def make_thesis(element):
