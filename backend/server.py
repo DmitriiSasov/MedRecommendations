@@ -47,7 +47,10 @@ def make_recommendation():
     browser.close()
 
     doc_name = create_pdf(recommendations[0])
-    return render_template('pdf.php', url=os.getcwd() + '\\' + doc_name)
+
+    url = os.getcwd() + '\\' + doc_name
+
+    return render_template('pdf.html', url=url)
 
 
 if __name__ == '__main__':
