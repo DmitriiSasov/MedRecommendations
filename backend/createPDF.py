@@ -2,7 +2,7 @@
 import os
 from fpdf import FPDF
 from pdfrw import PdfReader, PdfWriter
-from xhtml2pdf import pisa
+import datetime
 import pdfkit
 import re
 
@@ -76,9 +76,12 @@ def create_pdf(recommendation):
     writer = PdfWriter()
     writer.addpages(document)
     writer.addpages(criteria_page)
-    writer.write('newGuide.pdf')
 
-    os.system('newGuide.pdf')
+    doc_name = 'doc_'+str(datetime.date.today())+'_'+str(datetime.time.hour)+'-'+str(datetime.time.minute)+'.pdf'
+
+    writer.write(doc_name)
+
+    os.system(doc_name)
 
 
 def make_thesis(element):
