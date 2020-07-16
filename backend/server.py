@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify, request, render_template
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -38,12 +40,14 @@ def make_recommendation():
 
     for mkb in mkbs:
         if not _parser.go_to_recommendation_page(browser, mkb):
-            return jsonify({'Код мкб - ' + mkb + ' введен неверно или не существует': True}), 401
+            browser.close()
+            return jsonify({'Код мкб - ' + mkb + ' введен неверно или не существует'}), 401
         recommendations.append(_parser.get_recommdendation_info(browser))
 
-    doc_name = create_pdf(recommendations[0])
+    browser.close()
 
-    return render_template('pdf.php', url=doc_name)
+    doc_name = create_pdf(recommendations)
+    return render_template('pdf.php', url=os.getcwd() + '\\' + doc_name)
 
 
 if __name__ == '__main__':
