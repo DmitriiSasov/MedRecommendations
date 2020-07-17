@@ -1,4 +1,5 @@
 import os
+from threading import Timer
 
 from flask import Flask, jsonify, request, render_template, make_response
 from bs4 import BeautifulSoup
@@ -11,7 +12,7 @@ app = Flask(__name__, static_folder="static")
 
 URL = 'http://cr.rosminzdrav.ru/#!/rubricator/adults'
 
-
+# Проверяем, что к серверу рубрикатора можно подключиться
 def check_recommendation_service():
     browser = webdriver.Chrome('chromedriver.exe')
     browser.get(URL)
@@ -21,17 +22,25 @@ def check_recommendation_service():
     return element
 
 
+# Удаляем файл
+# path - строка - путь к файлу, который надо удалить
+def remove_file(path):  # path
+    os.remove(path)
+
+
+# Отображаем домашнюю страницу
 @app.route('/', methods=['GET'])
 def home_page():
     return render_template('index.php')
 
 
+# Создаем документ и отображаем его на странице
 @app.route('/search', methods=['POST'])
 def make_recommendation():
     search_req = request.form['search_req']
 
     if check_recommendation_service() is None:
-        return jsonify({'service_status': 'Сервис временно недоступен'}), 400
+        return make_response("<h2>Сервис временно не доступен</h2>", 400)
 
     recommendations = []
     mkbs = search_req.split("+")
@@ -41,7 +50,7 @@ def make_recommendation():
     for mkb in mkbs:
         if not _parser.go_to_recommendation_page(browser, mkb):
             browser.close()
-            return jsonify({'Код мкб - ' + mkb + ' введен неверно или не существует'}), 401
+            return make_response("<h2>" + 'Код мкб - ' + mkb + ' введен неверно или не существует' + "</h2>", 401)
         recommendations.append(_parser.get_recommdendation_info(browser))
 
     browser.close()
@@ -49,7 +58,8 @@ def make_recommendation():
     doc_name = create_pdf(recommendations[0])
 
     url = 'http://localhost:5000/static/' + doc_name
-
+    timer = Timer(600, remove_file, args=['static/' + doc_name])
+    timer.start()
     return render_template('pdf.html', url=url)
 
 
