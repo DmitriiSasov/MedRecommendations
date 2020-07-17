@@ -66,9 +66,11 @@ def create_pdf(recommendations):
     make_treatment(recommendation[1])
     pdf.ln()
 
-    pdf.output('document.pdf')
+    tmp_doc_name = 'document' + str(datetime.datetime.now().hour) + '_' + str(datetime.datetime.now().minute) + '_' \
+                   + str(datetime.datetime.now().second) + '.pdf'
+    pdf.output(tmp_doc_name)
 
-    document = PdfReader('document.pdf', decompress=False).pages
+    document = PdfReader(tmp_doc_name, decompress=False).pages
 
     criterias = get_criterias(recommendations)
     table = '<head> <meta content="text/html; charset=utf-8" http-equiv="Content-Type"> </head>' \
@@ -82,9 +84,11 @@ def create_pdf(recommendations):
     path_wkhtmltopdf = r'wkhtmltopdf\bin\wkhtmltopdf.exe'
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
-    pdfkit.from_string(table, 'criteria.pdf', configuration=config)
+    tmp_table_doc_name = 'criteria' + str(datetime.datetime.now().hour) + '_' + str(datetime.datetime.now().minute) + '_' \
+                   + str(datetime.datetime.now().second) + '.pdf'
+    pdfkit.from_string(table, tmp_table_doc_name, configuration=config)
 
-    criteria_page = PdfReader('criteria.pdf', decompress=False).pages
+    criteria_page = PdfReader(tmp_table_doc_name, decompress=False).pages
 
     writer = PdfWriter()
     writer.addpages(document)
@@ -96,6 +100,9 @@ def create_pdf(recommendations):
     writer.write(doc_name)
 
     os.replace(doc_name, './static/'+doc_name)
+
+    os.remove(tmp_doc_name)
+    os.remove(tmp_table_doc_name)
 
     return doc_name
 
