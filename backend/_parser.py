@@ -31,15 +31,31 @@ def get_recommendation_page_url(browser, nosology_id):
         print("Поиск временно недоступен")
         browser.close()
         return False
+    except TimeoutException:
+        print("Поиск временно недоступен")
+        browser.close()
+        return False
 
-    search_area.send_keys(nosology_id[:len(nosology_id) - 1])
-    time.sleep(1)
+    if len(nosology_id) != 1:
+        search_area.send_keys(nosology_id[:len(nosology_id) - 1])
+        time.sleep(1)
+
     search_area.send_keys(nosology_id[len(nosology_id) - 1])
     time.sleep(1)
 
     try:
+        browser.implicitly_wait(2)
         search_result = browser.find_elements_by_class_name('main-menu__search-result-item-text')
+        browser.implicitly_wait(10)
+        if len(search_result) == 0:
+            print("Не удалось найти результат")
+            browser.close()
+            return False
     except NoSuchElementException:
+        print("Не удалось найти результат")
+        browser.close()
+        return False
+    except TimeoutException:
         print("Не удалось найти результат")
         browser.close()
         return False
@@ -279,11 +295,10 @@ def get_recommdendation_info(browser):
     print(recommendation.table_tag)
     return recommendation
 
-"""
+
 if __name__ == '__main__':
     browser = webdriver.Chrome('chromedriver.exe')
-    browser.implicitly_wait(30)
+    browser.implicitly_wait(10)
     if go_to_recommendation_page(browser, 'i10'):
         get_recommdendation_info(browser)
-    browser.close()
-"""
+        browser.close()

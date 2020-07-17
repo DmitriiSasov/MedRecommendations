@@ -1,4 +1,4 @@
-from operator import attrgetter, itemgetter
+from operator import attrgetter
 
 
 class Thesis:
@@ -22,16 +22,3 @@ theses.sort(key=attrgetter('LCR', 'LRE'))
 
 a = 10
 
-treatments = [['раз', 'B', '2'],
-              ['раз', 'C', '1'],
-              ['раз', 'C', '5'],
-              ['раз', 'A', '3'],
-              ['раз', 'A', '1'],
-              ['раз', 'B', '3'],
-              ['раз', 'C', '4'],
-              ['раз', 'A', '4'],
-              ['раз', 'B', '2']]
-
-list.sort(key=itemgetter(1, 2))
-
-a = 10

@@ -5,6 +5,7 @@ from pdfrw import PdfReader, PdfWriter
 from backend.sort_document import get_criterias, get_mkbs, get_nosologies, sort
 import datetime
 import pdfkit
+import shutil
 
 # А - 0, 176, 80
 # B - 147, 208, 125
@@ -94,7 +95,7 @@ def create_pdf(recommendations):
 
     writer.write(doc_name)
 
-    os.system(doc_name)
+    os.replace(doc_name, './static/'+doc_name)
 
     return doc_name
 
