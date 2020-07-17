@@ -79,7 +79,7 @@ def create_pdf(recommendations):
                  + nosologies[i] + '</h2> </body>' + criterias[i]
         table = table.replace('border="0', 'border="1"')
 
-    path_wkhtmltopdf = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
+    path_wkhtmltopdf = r'wkhtmltopdf\bin\wkhtmltopdf.exe'
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
     pdfkit.from_string(table, 'criteria.pdf', configuration=config)
