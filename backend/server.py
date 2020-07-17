@@ -1,13 +1,13 @@
 import os
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, make_response
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from backend import _parser
 from backend.createPDF import create_pdf
 from backend.sort_document import sort
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 
 URL = 'http://cr.rosminzdrav.ru/#!/rubricator/adults'
 
@@ -48,7 +48,7 @@ def make_recommendation():
 
     doc_name = create_pdf(recommendations[0])
 
-    url = os.getcwd() + '\\' + doc_name
+    url = 'http://localhost:5000/static/' + doc_name
 
     return render_template('pdf.html', url=url)
 
