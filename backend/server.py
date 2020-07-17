@@ -12,6 +12,7 @@ app = Flask(__name__, static_folder="static")
 
 URL = 'http://cr.rosminzdrav.ru/#!/rubricator/adults'
 
+
 # Проверяем, что к серверу рубрикатора можно подключиться
 def check_recommendation_service():
     browser = webdriver.Chrome('chromedriver.exe')
@@ -49,7 +50,6 @@ def make_recommendation():
 
     for mkb in mkbs:
         if not _parser.go_to_recommendation_page(browser, mkb):
-            browser.close()
             return make_response("<h2>" + 'Код мкб - ' + mkb + ' введен неверно или не существует' + "</h2>", 401)
         recommendations.append(_parser.get_recommdendation_info(browser))
 
