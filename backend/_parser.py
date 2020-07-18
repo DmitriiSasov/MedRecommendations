@@ -198,7 +198,7 @@ def get_treatment_tags(browser):
         return []
     treatment_div = header_of_treatment_div.findParent()
     if treatment_div is None:
-        return {}
+        return []
 
     all_tags = list(
         list(treatment_div.findAll(True, recursive=False))[1].findChild().findAll(True, recursive=False))
