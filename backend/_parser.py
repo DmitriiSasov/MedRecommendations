@@ -260,6 +260,8 @@ def find_criteria_for_evaluating_div(browser):
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     header_of_criteria_div = soup.find(id="doc_criteria")
+    if header_of_criteria_div is None:
+        return None
     criteria_div = header_of_criteria_div.findParent()
     return criteria_div
 
