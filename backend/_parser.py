@@ -142,6 +142,8 @@ def get_diagnosys_theses(browser):
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     header_of_diagnosys_div = soup.find(id="doc_2")
+    if header_of_diagnosys_div is None:
+        return {}
     current_header = header_of_diagnosys_div.get_text()
     theses_dict[current_header] = []
     diagnosys_div = header_of_diagnosys_div.findParent()
