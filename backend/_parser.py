@@ -194,6 +194,8 @@ def get_treatment_tags(browser):
     html = browser.page_source
     soup = BeautifulSoup(html, 'html.parser')
     header_of_treatment_div = soup.find(id="doc_3")
+    if header_of_treatment_div is None:
+        return []
     treatment_div = header_of_treatment_div.findParent()
     if treatment_div is None:
         return {}
