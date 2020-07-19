@@ -32,7 +32,7 @@ def remove_file(path):  # path
 # Отображаем домашнюю страницу
 @app.route('/', methods=['GET'])
 def home_page():
-    return render_template('index.php')
+    return render_template('index.html')
 
 
 # Создаем документ и отображаем его на странице
