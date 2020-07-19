@@ -8,42 +8,42 @@ import backend._parser
 class TestParser(unittest.TestCase):
 
     def test_get_recommendation_page_url_empty_nosology_name(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         result = backend._parser.get_recommendation_page_url(browser, "")
 
         self.assertFalse(result)
 
     def test_get_recommendation_page_url_invalid_nosology_name(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         result = backend._parser.get_recommendation_page_url(browser, "шапывап")
 
         self.assertFalse(result)
 
     def test_get_recommendation_page_url_valid_nosology_name(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         result = backend._parser.get_recommendation_page_url(browser, "f")
         expected_result = 'http://cr.rosminzdrav.ru/#!/schema/947'
         self.assertEqual(result, expected_result)
 
     def test_go_to_recommendation_page_invalid_nosology_id(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         result = backend._parser.go_to_recommendation_page(browser, "шапывап")
 
         self.assertFalse(result)
 
     def test_go_to_recommendation_page_valid_nosology_id(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         result = backend._parser.go_to_recommendation_page(browser, "f")
 
         self.assertTrue(result)
 
     def test_get_nozology_name_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/')
         result = backend._parser.get_nozology_name(browser)
@@ -52,7 +52,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_nozology_name_valid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         result = backend._parser.get_nozology_name(browser)
@@ -61,7 +61,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_MKBs_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/')
         result = backend._parser.get_MKBs(browser)
@@ -70,7 +70,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_MKBs_one_MKB(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/38')
         result = backend._parser.get_MKBs(browser)
@@ -79,7 +79,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_MKBs_some_MKBs(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         result = backend._parser.get_MKBs(browser)
@@ -154,7 +154,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_diagnosys_theses_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
         result = backend._parser.get_diagnosys_theses(browser)
@@ -163,7 +163,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_diagnosys_theses_page_with_usual_theses(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         browser.find_element_by_id('mkb')
@@ -177,7 +177,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_diagnosys_theses_page_with_unusual_theses(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
@@ -191,7 +191,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_treatment_tags_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
         result = backend._parser.get_treatment_tags(browser)
@@ -200,7 +200,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_treatment_tags_page_without_medication(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         browser.find_element_by_id('mkb')
@@ -210,7 +210,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_treatment_tags_page_with_medication(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
@@ -225,7 +225,7 @@ class TestParser(unittest.TestCase):
 
     def test_get_treatment_theses_page_with_medication(self):
 
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
@@ -239,7 +239,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result[7].LRE, expected_result_3)
 
     def test_find_criteria_for_evaluating_div_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
         result = backend._parser.find_criteria_for_evaluating_div(browser)
@@ -248,7 +248,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_find_criteria_for_evaluating_div_valid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
@@ -257,7 +257,7 @@ class TestParser(unittest.TestCase):
         self.assertTrue(result is not None)
 
     def test_get_criteria_for_evaluating_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
         result = backend._parser.get_criteria_for_evaluating(browser)
@@ -266,7 +266,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, expected_result)
 
     def test_get_criteria_for_evaluating_text_after_table(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
@@ -278,7 +278,7 @@ class TestParser(unittest.TestCase):
                                              'помощи пациентам с АГ являются'))
 
     def test_get_criteria_for_evaluating_only_table(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         browser.find_element_by_id('mkb')
@@ -290,7 +290,7 @@ class TestParser(unittest.TestCase):
         self.assertFalse(result.__contains__('Список литературы'))
 
     def test_get_recommendation_info_invalid_page(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
         result = backend._parser.get_recommdendation_info(browser)
@@ -307,7 +307,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result.table_tag, expected_table_tag)
 
     def test_get_recommendation_info_page_with_all_blocks(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         backend._parser.go_to_recommendation_page(browser, 'i10')
         result = backend._parser.get_recommdendation_info(browser)
@@ -328,7 +328,7 @@ class TestParser(unittest.TestCase):
         self.assertTrue(result.table_tag.__contains__(expected_table_data))
 
     def test_get_recommendation_info_page_without_medication_block(self):
-        browser = webdriver.Chrome('backend\\chromedriver.exe')
+        browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
         backend._parser.go_to_recommendation_page(browser, 'e10')
         result = backend._parser.get_recommdendation_info(browser)
