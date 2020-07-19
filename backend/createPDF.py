@@ -5,7 +5,7 @@ from pdfrw import PdfReader, PdfWriter
 from backend.sort_document import get_criterias, get_mkbs, get_nosologies, sort
 import datetime
 import pdfkit
-import shutil
+
 
 # А - 0, 176, 80
 # B - 147, 208, 125
@@ -19,13 +19,14 @@ import shutil
 # 5 (мой вариант) - 100, 117, 140
 
 
-pdf = FPDF(orientation='P', unit='mm', format='A4')
-
-
+# Создание PDF-файла на основе переданных рекомендаций
+# recommendations - список рекомендаций
 def create_pdf(recommendations):
-    pdf.add_font('times', '', 'times.ttf', uni=True)
-    pdf.add_font('timesbd', '', 'timesbd.ttf', uni=True)
-    pdf.add_font('timesi', '', 'timesi.ttf', uni=True)
+    pdf = FPDF(orientation='P', unit='mm', format='A4')
+
+    pdf.add_font('times', '', 'fonts/times.ttf', uni=True)
+    pdf.add_font('timesbd', '', 'fonts/timesbd.ttf', uni=True)
+    pdf.add_font('timesi', '', 'fonts/timesi.ttf', uni=True)
 
     pdf.add_page()
     pdf.set_font('timesbd', size=22)
@@ -43,8 +44,8 @@ def create_pdf(recommendations):
             mkb += code + ', '
         mkb = mkb[0:-2]
 
-        pdf.multi_cell(0, 5, txt=nosologies[i] + ' (' + mkb + ')')
-        pdf.ln(5)
+        pdf.multi_cell(0, 7, txt=nosologies[i] + ' (' + mkb + ')')
+        pdf.ln(3)
         mkb = ''
 
     pdf.add_page()
@@ -59,11 +60,11 @@ def create_pdf(recommendations):
 
     recommendation = sort(recommendations)
 
-    make_diagnostics(recommendation[0])
+    make_diagnostics(pdf, recommendation[0])
     pdf.ln()
     if pdf.get_y() > 200:
         pdf.add_page()
-    make_treatment(recommendation[1])
+    make_treatment(pdf, recommendation[1])
     pdf.ln()
 
     tmp_doc_name = 'document' + str(datetime.datetime.now().hour) + '_' + str(datetime.datetime.now().minute) + '_' \
@@ -84,8 +85,8 @@ def create_pdf(recommendations):
     path_wkhtmltopdf = r'wkhtmltopdf\bin\wkhtmltopdf.exe'
     config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
-    tmp_table_doc_name = 'criteria' + str(datetime.datetime.now().hour) + '_' + str(datetime.datetime.now().minute) + '_' \
-                   + str(datetime.datetime.now().second) + '.pdf'
+    tmp_table_doc_name = 'criteria' + str(datetime.datetime.now().hour) + '_' + str(
+        datetime.datetime.now().minute) + '_' + str(datetime.datetime.now().second) + '.pdf'
     pdfkit.from_string(table, tmp_table_doc_name, configuration=config)
 
     criteria_page = PdfReader(tmp_table_doc_name, decompress=False).pages
@@ -99,7 +100,7 @@ def create_pdf(recommendations):
 
     writer.write(doc_name)
 
-    os.replace(doc_name, './static/'+doc_name)
+    os.replace(doc_name, './static/' + doc_name)
 
     os.remove(tmp_doc_name)
     os.remove(tmp_table_doc_name)
@@ -107,7 +108,10 @@ def create_pdf(recommendations):
     return doc_name
 
 
-def make_thesis(element):
+# Создание тезиса
+# pdf - рабочий PDF-файл
+# element - один тезис
+def make_thesis(pdf, element):
     pdf.set_font('times', size=16)
     text_thesis = '• ' + element.text[1:]
     text_thesis = text_thesis.replace('й', 'й')
@@ -143,32 +147,38 @@ def make_thesis(element):
     pdf.ln(5)
 
 
-def make_diagnostics(dictionary):
+# Создание диагностики
+# pdf - рабочий PDF-файл
+# dictionary - словарь тезисов Диагностики
+def make_diagnostics(pdf, dictionary):
     pdf.set_font('timesbd', size=22)
     pdf.cell(200, 10, txt='1. Диагностика', ln=1)
     pdf.ln()
 
     num = 1
     for key in dictionary.keys():
-            pdf.set_font('timesbd', size=18)
+        pdf.set_font('timesbd', size=18)
 
-            title = '1.' + str(num) + ' ' + key
-            pdf.cell(200, 10, txt=title, ln=1)
+        title = '1.' + str(num) + ' ' + key
+        pdf.cell(200, 10, txt=title, ln=1)
 
-            pdf.ln(7)
-            for element in dictionary[key]:
-                make_thesis(element)
+        pdf.ln(7)
+        for element in dictionary[key]:
+            make_thesis(pdf, element)
 
-            if len(dictionary.get(key)) == 0:
-                pdf.set_font('times', size=16)
-                pdf.multi_cell(0, 6, txt='• Не рекомендуется')
-                pdf.ln(5)
+        if len(dictionary.get(key)) == 0:
+            pdf.set_font('times', size=16)
+            pdf.multi_cell(0, 6, txt='• Отсутствует')
+            pdf.ln(5)
 
-            pdf.ln(10)
-            num += 1
+        pdf.ln(10)
+        num += 1
 
 
-def make_treatment(dictionary):
+# Создание лечения
+# pdf - рабочий PDF-файл
+# tlist - список тезисов Лечения
+def make_treatment(pdf, tlist):
     pdf.set_font('timesbd', size=22)
     pdf.cell(200, 10, txt='2. Лечение', ln=1)
     pdf.ln()
@@ -177,9 +187,9 @@ def make_treatment(dictionary):
     pdf.cell(200, 10, txt='2.1 Медикаментозная терапия', ln=1)
     pdf.ln(7)
 
-    if len(dictionary) > 0:
-        for element in dictionary:
-            make_thesis(element)
+    if len(tlist) > 0:
+        for element in tlist:
+            make_thesis(pdf, element)
     else:
         pdf.set_font('times', size=16)
         pdf.multi_cell(0, 6, txt='• Отсутствует')
