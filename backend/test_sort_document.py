@@ -498,6 +498,41 @@ class TestSortDocument(unittest.TestCase):
             i += 1
 
     # Сортировка всех тезисов и проверка тезисов диагностики
+    def test_sort(self):
+
+        expected_diagnostic_theses = make_diagnostic_theses_for_sort_test()
+        expected_treatment_theses = make_treatment_theses_for_sort_test()
+
+        recommendation = combine_recommendations(recommendations3)
+        actual_diagnostic_theses = sort_diagnostic_theses(recommendation[0])
+        actual_treatment_theses = sort_treatment_theses(recommendation[1])
+
+        for key in expected_diagnostic_theses:
+            i = 0
+            for thesis in expected_diagnostic_theses[key]:
+                self.assertEqual(1, thesis_compare(thesis, actual_diagnostic_theses[key][i]))
+                i += 1
+
+        i = 0
+        for thesis in expected_treatment_theses:
+            self.assertEqual(1, thesis_compare(thesis, actual_treatment_theses[i]))
+            i += 1
+
+    # Пустой словарь
+    def test_sort_diagnostic_theses_empty(self):
+
+        expected_diagnostic_theses = {}
+
+        diagnostic = {}
+        actual_diagnostic_theses = sort_diagnostic_theses(diagnostic)
+
+        for key in expected_diagnostic_theses:
+            i = 0
+            for thesis in expected_diagnostic_theses[key]:
+                self.assertEqual(1, thesis_compare(thesis, actual_diagnostic_theses[key][i]))
+                i += 1
+
+    # Сортировка всех тезисов и проверка тезисов лечения
     def test_sort_diagnostic_theses(self):
 
         expected_diagnostic_theses = make_diagnostic_theses_for_sort_test()
@@ -510,6 +545,19 @@ class TestSortDocument(unittest.TestCase):
             for thesis in expected_diagnostic_theses[key]:
                 self.assertEqual(1, thesis_compare(thesis, actual_diagnostic_theses[key][i]))
                 i += 1
+
+    # Пустой список
+    def test_sort_treatment_theses_empty(self):
+
+        expected_treatment_theses = []
+
+        treatment = []
+        actual_treatment_theses = sort_treatment_theses(treatment)
+
+        i = 0
+        for thesis in expected_treatment_theses:
+            self.assertEqual(1, thesis_compare(thesis, actual_treatment_theses[i]))
+            i += 1
 
     # Сортировка всех тезисов и проверка тезисов лечения
     def test_sort_treatment_theses(self):
