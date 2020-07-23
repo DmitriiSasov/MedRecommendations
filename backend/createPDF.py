@@ -52,8 +52,8 @@ def create_pdf(recommendations):
     pdf.set_font('timesbd', size=22)
     pdf.cell(200, 10, txt='Оглавление', ln=1)
     pdf.set_font('times', size=18)
-    pdf.cell(200, 10, txt='• Диагностика', ln=1)
-    pdf.cell(200, 10, txt='• Лечение', ln=1)
+    pdf.cell(200, 10, txt='• 1 Диагностика', ln=1)
+    pdf.cell(200, 10, txt='• 2 Лечение', ln=1)
     pdf.cell(200, 10, txt='• Критерии оценки качества медицинской помощи', ln=1)
 
     pdf.add_page()
@@ -124,11 +124,11 @@ def make_thesis(pdf, element):
     text_full = '(УУР ' + element.LCR + ', УДД ' + element.LRE + ') = '
 
     pdf.cell(47, 8, txt=text_full)
-    if text_lcr == 'A' or text_lcr == 'А':
+    if text_lcr == 'A':
         pdf.set_fill_color(0, 176, 80)
-    elif text_lcr == 'B' or text_lcr == 'В':
+    elif text_lcr == 'B':
         pdf.set_fill_color(147, 208, 125)
-    else:
+    elif text_lcr == 'C':
         pdf.set_fill_color(255, 192, 0)
     pdf.cell(6, 8, txt=text_lcr, fill=True, align='C')
 
@@ -140,7 +140,7 @@ def make_thesis(pdf, element):
         pdf.set_fill_color(42, 173, 64)
     elif text_lre == '4':
         pdf.set_fill_color(57, 137, 127)
-    else:
+    elif text_lre == '5':
         pdf.set_fill_color(100, 117, 140)
     pdf.cell(6, 8, txt=text_lre, ln=1, fill=True, align='C')
 
@@ -152,7 +152,7 @@ def make_thesis(pdf, element):
 # dictionary - словарь тезисов Диагностики
 def make_diagnostics(pdf, dictionary):
     pdf.set_font('timesbd', size=22)
-    pdf.cell(200, 10, txt='1. Диагностика', ln=1)
+    pdf.cell(200, 10, txt='1 Диагностика', ln=1)
     pdf.ln()
 
     num = 1
@@ -180,7 +180,7 @@ def make_diagnostics(pdf, dictionary):
 # tlist - список тезисов Лечения
 def make_treatment(pdf, tlist):
     pdf.set_font('timesbd', size=22)
-    pdf.cell(200, 10, txt='2. Лечение', ln=1)
+    pdf.cell(200, 10, txt='2 Лечение', ln=1)
     pdf.ln()
 
     pdf.set_font('timesbd', size=18)

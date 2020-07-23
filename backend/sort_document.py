@@ -49,7 +49,7 @@ def combine_recommendations(recommendations):
             buff = key
             buff = re.sub(r'[^\w\s]+|[\d]+', r'', buff).strip()
             if buff == 'Физикальное обследование' or buff == 'Лабораторная диагностика' \
-                    or buff == 'Инструментальная диагностика' or buff == 'Иные диагностические исследования'\
+                    or buff == 'Инструментальная диагностика' or buff == 'Иные диагностические исследования' \
                     or buff == 'Лабораторные диагностические исследования' \
                     or buff == 'Инструментальные диагностические исследования':
                 if buff == 'Лабораторные диагностические исследования':
@@ -77,7 +77,6 @@ def combine_recommendations(recommendations):
 # recommendations - список рекомендаций
 # return - рекомендация (список из словаря тезисов Диагностики и списка тезисов Лечения)
 def sort(recommendations):
-
     recommendation = combine_recommendations(recommendations)
 
     recommendation[0] = sort_diagnostic_theses(recommendation[0])
@@ -104,6 +103,10 @@ def sort_diagnostic_theses(diagnostic):
 # diagnostic - список тезисов Диагностики
 # return - отсортированный список тезисов Диагностики
 def sort_treatment_theses(treatment):
+    for element in treatment:
+        element.LCR = lcr_replace(str(element.LCR))
+        element.LRE = lre_replace(str(element.LRE))
+
     treatment.sort(key=attrgetter('LCR', 'LRE'))
 
     return treatment
