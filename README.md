@@ -38,4 +38,4 @@
 
 <h2>Как запустить сервер</h2>
 
-Жмем Run 'server.py'
+Жмем Run 'server.py' или запускаем 'ClinRec/ClinRec.exe'
