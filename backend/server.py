@@ -57,7 +57,7 @@ def make_recommendation():
 
     doc_name = create_pdf(recommendations)
 
-    url = 'http://localhost:5000/static/' + doc_name
+    url = 'static/' + doc_name
     timer = Timer(600, remove_file, args=['static/' + doc_name])
     timer.start()
     return render_template('pdf.html', url=url)
