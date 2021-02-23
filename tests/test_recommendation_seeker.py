@@ -2,63 +2,43 @@ import unittest
 
 from selenium import webdriver
 
-import _parser
+import recommendation_seeker
 
 
 class TestParser(unittest.TestCase):
 
-    def test_is_recommendation_server_available_server_is_available(self):
-        self.assertTrue(_parser.is_recommendation_service_available())
-
-    def test_is_recommendation_server_available_mkb_list_is_not_available(self):
-        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKBadsad'
-        self.assertFalse(_parser.is_recommendation_service_available())
-        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKB'
-
-    def test_is_recommendation_server_available_recomends_list_is_not_available(self):
-        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=dadsad'
-        self.assertFalse(_parser.is_recommendation_service_available())
-        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
-
-    def test_is_recommendation_server_available_recomends_list_is_not_available(self):
-        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=dadsad'
-        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKBadsad'
-        self.assertFalse(_parser.is_recommendation_service_available())
-        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
-        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKB'
-
     def test_get_recommendation_page_url_empty_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        result = _parser.get_recommendation_page_url(browser, "")
+        result = recommendation_seeker.get_recommendation_page_url(browser, "")
 
         self.assertFalse(result)
 
     def test_get_recommendation_page_url_invalid_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        result = _parser.get_recommendation_page_url(browser, "шапывап")
+        result = recommendation_seeker.get_recommendation_page_url(browser, "шапывап")
 
         self.assertFalse(result)
 
     def test_get_recommendation_page_url_valid_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        result = _parser.get_recommendation_page_url(browser, "f")
+        result = recommendation_seeker.get_recommendation_page_url(browser, "f")
         expected_result = 'http://cr.rosminzdrav.ru/#!/schema/947'
         self.assertEqual(result, expected_result)
 
     def test_go_to_recommendation_page_invalid_nosology_id(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        result = _parser.go_to_recommendation_page(browser, "шапывап")
+        result = recommendation_seeker.go_to_recommendation_page(browser, "шапывап")
 
         self.assertFalse(result)
 
     def test_go_to_recommendation_page_valid_nosology_id(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        result = _parser.go_to_recommendation_page(browser, "f")
+        result = recommendation_seeker.go_to_recommendation_page(browser, "f")
 
         self.assertTrue(result)
 
@@ -66,7 +46,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/')
-        result = _parser.get_nozology_name(browser)
+        result = recommendation_seeker.get_nozology_name(browser)
         expected_result = ''
 
         self.assertEqual(result, expected_result)
@@ -75,7 +55,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
-        result = _parser.get_nozology_name(browser)
+        result = recommendation_seeker.get_nozology_name(browser)
         expected_result = 'Сахарный диабет 1 типа у детей'
 
         self.assertEqual(result, expected_result)
@@ -84,7 +64,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/')
-        result = _parser.get_MKBs(browser)
+        result = recommendation_seeker.get_MKBs(browser)
         expected_result = []
 
         self.assertEqual(result, expected_result)
@@ -93,7 +73,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/38')
-        result = _parser.get_MKBs(browser)
+        result = recommendation_seeker.get_MKBs(browser)
         expected_result = ' H80 '.split('/')
 
         self.assertEqual(result, expected_result)
@@ -102,7 +82,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
-        result = _parser.get_MKBs(browser)
+        result = recommendation_seeker.get_MKBs(browser)
         expected_result = 'E10.1/E10.2/E10.3/E10.4/E10.5/E10.6/E10.7/E10.8/E10.9'.split('/')
 
         self.assertEqual(result, expected_result)
@@ -114,28 +94,28 @@ class TestParser(unittest.TestCase):
                 питание;
                 физические нагрузки;
                 психологическая помощь. доказательств"""
-        result = _parser.get_LCR(text)
+        result = recommendation_seeker.get_LCR(text)
         expected_result = ''
 
         self.assertEqual(result, expected_result)
 
     def test_get_LCR_text_with_correct_LCR_abbreviation(self):
         text = 'ЕОК/ЕОАГ IIаB (УУР B, УДД 1)'
-        result = _parser.get_LCR(text)
+        result = recommendation_seeker.get_LCR(text)
         expected_result = 'B'
 
         self.assertEqual(result, expected_result)
 
     def test_get_LCR_text_with_LCR_no_abbreviation(self):
         text = 'Уровень убедительности рекомендаций А (уровень достоверности доказательств – 3)'
-        result = _parser.get_LCR(text)
+        result = recommendation_seeker.get_LCR(text)
         expected_result = 'А'
 
         self.assertEqual(result, expected_result)
 
     def test_get_LCR_text_with_specific_LCR_wording(self):
         text = 'Показатель качества рекомендаций А (Показатель уровня доказательств – 3)'
-        result = _parser.get_LCR(text)
+        result = recommendation_seeker.get_LCR(text)
         expected_result = 'А'
 
         self.assertEqual(result, expected_result)
@@ -147,28 +127,28 @@ class TestParser(unittest.TestCase):
                         питание;
                         физические нагрузки;
                         психологическая помощь. доказательств"""
-        result = _parser.get_LRE(text)
+        result = recommendation_seeker.get_LRE(text)
         expected_result = ''
 
         self.assertEqual(result, expected_result)
 
     def test_get_LRE_text_with_correct_LRE_abbreviation(self):
         text = 'ЕОК/ЕОАГ IIаB (УУР B, УДД 1)'
-        result = _parser.get_LRE(text)
+        result = recommendation_seeker.get_LRE(text)
         expected_result = '1'
 
         self.assertEqual(result, expected_result)
 
     def test_get_LRE_text_with_LRE_no_abbreviation(self):
         text = 'Уровень убедительности рекомендаций А (уровень достоверности доказательств – 3)'
-        result = _parser.get_LRE(text)
+        result = recommendation_seeker.get_LRE(text)
         expected_result = '3'
 
         self.assertEqual(result, expected_result)
 
     def test_get_LRE_text_with_specific_LRE_wording(self):
         text = 'Показатель качества рекомендаций А (Показатель уровня доказательств – 3)'
-        result = _parser.get_LRE(text)
+        result = recommendation_seeker.get_LRE(text)
         expected_result = '3'
 
         self.assertEqual(result, expected_result)
@@ -177,7 +157,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
-        result = _parser.get_diagnosys_theses(browser)
+        result = recommendation_seeker.get_diagnosys_theses(browser)
         expected_result = {}
 
         self.assertEqual(result, expected_result)
@@ -187,7 +167,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(10)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         browser.find_element_by_id('mkb')
-        theses = _parser.get_diagnosys_theses(browser)
+        theses = recommendation_seeker.get_diagnosys_theses(browser)
         result = []
         for key in theses:
             result.append(len(theses[key]))
@@ -201,7 +181,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(10)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
-        theses = _parser.get_diagnosys_theses(browser)
+        theses = recommendation_seeker.get_diagnosys_theses(browser)
         result = []
         for key in theses:
             result.append(len(theses[key]))
@@ -214,7 +194,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
-        result = _parser.get_treatment_tags(browser)
+        result = recommendation_seeker.get_treatment_tags(browser)
         expected_result = []
 
         self.assertEqual(result, expected_result)
@@ -224,7 +204,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         browser.find_element_by_id('mkb')
-        result = _parser.get_treatment_tags(browser)
+        result = recommendation_seeker.get_treatment_tags(browser)
         expected_result = []
 
         self.assertEqual(result, expected_result)
@@ -234,7 +214,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
-        result = _parser.get_treatment_tags(browser)
+        result = recommendation_seeker.get_treatment_tags(browser)
         expected_result_1 = 56
         expected_result_2 = 'p'
         expected_result_3 = 'ul'
@@ -249,7 +229,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
-        result = _parser.get_treatment_theses(browser)
+        result = recommendation_seeker.get_treatment_theses(browser)
         expected_result_1 = 8
         expected_result_2 = 'B'
         expected_result_3 = '2'
@@ -262,7 +242,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
-        result = _parser.find_criteria_for_evaluating_div(browser)
+        result = recommendation_seeker.find_criteria_for_evaluating_div(browser)
         expected_result = None
 
         self.assertEqual(result, expected_result)
@@ -272,7 +252,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
-        result = _parser.find_criteria_for_evaluating_div(browser)
+        result = recommendation_seeker.find_criteria_for_evaluating_div(browser)
 
         self.assertTrue(result is not None)
 
@@ -280,7 +260,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
-        result = _parser.get_criteria_for_evaluating(browser)
+        result = recommendation_seeker.get_criteria_for_evaluating(browser)
         expected_result = ''
 
         self.assertEqual(result, expected_result)
@@ -290,7 +270,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/687')
         browser.find_element_by_id('mkb')
-        result = _parser.get_criteria_for_evaluating(browser)
+        result = recommendation_seeker.get_criteria_for_evaluating(browser)
 
         self.assertTrue(result is not None)
         self.assertTrue(result.__contains__('Выполнен общий анализ крови'))
@@ -302,7 +282,7 @@ class TestParser(unittest.TestCase):
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/#!/schema/964')
         browser.find_element_by_id('mkb')
-        result = _parser.get_criteria_for_evaluating(browser)
+        result = recommendation_seeker.get_criteria_for_evaluating(browser)
 
         self.assertTrue(result is not None)
         self.assertTrue(result.__contains__('Выполнено измерение гликемии не реже 6 раз в 24 часа ежедневно'))
@@ -313,7 +293,7 @@ class TestParser(unittest.TestCase):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(3)
         browser.get('http://cr.rosminzdrav.ru/')
-        result = _parser.get_recommdendation_info(browser)
+        result = recommendation_seeker.get_recommdendation_info(browser)
         expected_nosology_name = ''
         expected_MKBs = []
         expected_diagnostic_theses = {}
@@ -329,8 +309,8 @@ class TestParser(unittest.TestCase):
     def test_get_recommendation_info_page_with_all_blocks(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        _parser.go_to_recommendation_page(browser, 'i10')
-        result = _parser.get_recommdendation_info(browser)
+        recommendation_seeker.go_to_recommendation_page(browser, 'i10')
+        result = recommendation_seeker.get_recommdendation_info(browser)
         diagnosys_theses_count_in_groups = []
         for key in result.diagnosticTheses:
             diagnosys_theses_count_in_groups.append(len(result.diagnosticTheses[key]))
@@ -350,8 +330,8 @@ class TestParser(unittest.TestCase):
     def test_get_recommendation_info_page_without_medication_block(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
-        _parser.go_to_recommendation_page(browser, 'e10')
-        result = _parser.get_recommdendation_info(browser)
+        recommendation_seeker.go_to_recommendation_page(browser, 'e10')
+        result = recommendation_seeker.get_recommdendation_info(browser)
         diagnosys_theses_count_in_groups = []
         for key in result.diagnosticTheses:
             diagnosys_theses_count_in_groups.append(len(result.diagnosticTheses[key]))
