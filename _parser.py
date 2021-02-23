@@ -6,22 +6,12 @@ from data_structures import Recommendation
 from data_structures import Thesis
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
-URL = 'http://cr.rosminzdrav.ru/#!/'
 
-MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKB'
-RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
+class RecommendationSeeker:
+    pass
 
 
-# Проверяем, что к серверу рубрикатора можно подключиться
-def is_recommendation_service_available():
-    mkbs_response = requests.get(MKB_CODE_URL)
-    if mkbs_response.status_code != 200 or not mkbs_response.text.__contains__('MkbClass'):
-        return False
 
-    recommendation_response = requests.get(RECOMMENDATION_URL)
-    if recommendation_response.status_code != 200 or not recommendation_response.text.__contains__('{"id":'):
-        return False
-    return True
 
 
 # browser - webdriver
