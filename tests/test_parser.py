@@ -7,6 +7,26 @@ import _parser
 
 class TestParser(unittest.TestCase):
 
+    def test_is_recommendation_server_available_server_is_available(self):
+        self.assertTrue(_parser.is_recommendation_service_available())
+
+    def test_is_recommendation_server_available_mkb_list_is_not_available(self):
+        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKBadsad'
+        self.assertFalse(_parser.is_recommendation_service_available())
+        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKB'
+
+    def test_is_recommendation_server_available_recomends_list_is_not_available(self):
+        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=dadsad'
+        self.assertFalse(_parser.is_recommendation_service_available())
+        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
+
+    def test_is_recommendation_server_available_recomends_list_is_not_available(self):
+        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=dadsad'
+        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKBadsad'
+        self.assertFalse(_parser.is_recommendation_service_available())
+        _parser.RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
+        _parser.MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKB'
+
     def test_get_recommendation_page_url_empty_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
