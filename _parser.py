@@ -1,10 +1,22 @@
+import time
+import requests
+
 from bs4 import BeautifulSoup
 from data_structures import Recommendation
 from data_structures import Thesis
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-import time
 
 URL = 'http://cr.rosminzdrav.ru/#!/'
+
+MKB_CODE_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetMZListMKB'
+RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
+
+
+# Проверяем, что к серверу рубрикатора можно подключиться
+def is_recommendation_service_available():
+    mkbs = requests.get(MKB_CODE_URL)
+    recs = requests.get(RECOMMENDATION_URL)
+    return False
 
 
 # browser - webdriver

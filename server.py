@@ -9,18 +9,6 @@ from create_pdf import make_pdf
 
 app = Flask(__name__, static_folder="static")
 
-URL = 'http://cr.rosminzdrav.ru/#!/rubricator/adults'
-
-
-# Проверяем, что к серверу рубрикатора можно подключиться
-def check_recommendation_service():
-    browser = webdriver.Chrome('chromedriver.exe')
-    browser.get(URL)
-    soup = BeautifulSoup(browser.page_source, 'html.parser')
-    element = soup.find('div', {'class': 'rubricator__tab-content tab-content'})
-    browser.close()
-    return element
-
 
 # Удаляем файл
 # path - строка - путь к файлу, который надо удалить
@@ -39,7 +27,7 @@ def home_page():
 def make_recommendation():
     search_req = request.form['search_req']
 
-    if check_recommendation_service() is None:
+    if _parser.is_recommendation_service_available() is False:
         return make_response("<h2>Сервис временно не доступен</h2>", 400)
 
     recommendations = []
@@ -63,4 +51,4 @@ def make_recommendation():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8880)
+    app.run(port=8880)
