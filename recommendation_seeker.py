@@ -1,22 +1,57 @@
+import re
 import time
 import requests
+import json
 
 from bs4 import BeautifulSoup
 from data_structures import Recommendation
 from data_structures import Thesis
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 class RecommendationSeeker:
 
+    RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetClinrec2&id=__ID&ssid=undefined'
+
+    __recommendation_content_json = None
+
     def find_recommendation(self, identifier: str):
-        print(identifier)
+        recommendation_content = requests.get(self.RECOMMENDATION_URL.replace('__ID', identifier))
+        if recommendation_content.status_code != 200:
+            return False
+        self.__recommendation_content_json = json.loads(recommendation_content.text)
+        recommendation = Recommendation()
+        recommendation.MKBs = self.__find_mkbs()
+        recommendation.nozology_name = self.__recommendation_content_json['name']
+        recommendation.table_tag = self.__find_criteria()
+        recommendation.diagnosticTheses = self.__find_diagnosys_theses()
+        recommendation.treatmentTheses = self.__find_treatment_theses()
+
+
+    def __find_treatment_theses(self):
+        for section in self.__recommendation_content_json['obj']['sections']:
+            if section['title'] == "3. Лечение":
+                html_parser = BeautifulSoup(section["content"], 'html.parser')
+
+                return
+
+    def __find_diagnosys_theses(self):
+        return
+
+    def __find_mkbs(self):
+        return list(filter(lambda a: a != '', re.split(r'[^\wа-яА-Я.]', self.__recommendation_content_json['mkb'])))
+
+    def __find_criteria(self):
+        for section in self.__recommendation_content_json['obj']['sections']:
+            if section['title'] == "Критерии оценки качества медицинской помощи":
+                html_parser = BeautifulSoup(section["content"], 'html.parser')
+                criteria_table = html_parser.find('table')
+                return criteria_table
 
 
 
 
 
-# browser - webdriver
+            # browser - webdriver
 # nosology_id - строка с идентификатором нозологии
 def go_to_recommendation_page(browser, nosology_id):
     res = get_recommendation_page_url(browser, nosology_id)
