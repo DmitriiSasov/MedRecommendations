@@ -8,7 +8,9 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 
 
 class RecommendationSeeker:
-    pass
+
+    def find_recommendation(self, identifier: str):
+        print(identifier)
 
 
 
