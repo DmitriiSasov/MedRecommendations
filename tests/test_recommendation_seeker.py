@@ -7,6 +7,8 @@ import recommendation_seeker
 
 class TestParser(unittest.TestCase):
 
+    # Создать тесты на случаи, когда не находятся теги или содержимое внутри тегов.
+
     def test_get_recommendation_page_url_empty_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
         browser.implicitly_wait(10)
