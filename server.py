@@ -4,6 +4,7 @@ from threading import Timer
 from flask import Flask, request, render_template, make_response
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from db import get_recommendation_from_db
 import _parser
 from create_pdf import make_pdf
 
@@ -44,15 +45,9 @@ def make_recommendation():
 
     recommendations = []
     mkbs = search_req.split("+")
-    browser = webdriver.Chrome('chromedriver.exe')
-    browser.implicitly_wait(60)
 
     for mkb in mkbs:
-        if not _parser.go_to_recommendation_page(browser, mkb):
-            return make_response("<h2>" + 'Код мкб - ' + mkb + ' введен неверно или не существует' + "</h2>", 401)
-        recommendations.append(_parser.get_recommdendation_info(browser))
-
-    browser.close()
+        recommendations.append(get_recommendation_from_db(mkb))
 
     doc_name = make_pdf(recommendations)
 
