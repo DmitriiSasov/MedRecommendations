@@ -5,7 +5,6 @@ from flask import Flask, request, render_template, make_response
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from db import get_recommendation_from_db
-import _parser
 from create_pdf import make_pdf
 
 app = Flask(__name__, static_folder="static")
@@ -39,9 +38,6 @@ def home_page():
 @app.route('/search', methods=['POST'])
 def make_recommendation():
     search_req = request.form['search_req']
-
-    if check_recommendation_service() is None:
-        return make_response("<h2>Сервис временно не доступен</h2>", 400)
 
     recommendations = []
     mkbs = search_req.split("+")
