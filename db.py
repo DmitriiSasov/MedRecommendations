@@ -2,6 +2,7 @@
 
 import pymysql
 from data_structures import Recommendation, Thesis
+from create_pdf import make_pdf
 
 DB_HOST = 'localhost'
 DB_NAME = 'mydb'
@@ -91,13 +92,14 @@ def get_diagnostic_theses_by_recommendation_id(cur, recommendation_id):
 
         theses = cur.fetchall()
 
-        thesis = Thesis()
-
+        diagnostic[diagnostic_name] = []
         for elem in theses:
+            thesis = Thesis()
+
             thesis.text = "{0}".format(elem[1])
             thesis.LCR = "{0}".format(elem[2])
             thesis.LRE = "{0}".format(elem[3])
-            diagnostic[diagnostic_name] = [thesis]
+            diagnostic[diagnostic_name] += [thesis]
 
     return diagnostic
 
@@ -119,4 +121,7 @@ def get_treatment_theses_by_recommendation_id(cur, recommendation_id):
     return treatment_theses
 
 
-test1 = get_recommendation_from_db("i10")
+test1 = []
+test1.append(get_recommendation_from_db("i10"))
+
+make_pdf(test1)
