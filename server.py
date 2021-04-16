@@ -16,38 +16,39 @@ def remove_file(path):  # path
     os.remove(path)
 
 
-# Отображаем домашнюю страницу
-@app.route('/', methods=['GET'])
-def home_page():
-    return render_template('index.php')
+class Router:
 
+    # Отображаем домашнюю страницу
+    @app.route('/', methods=['GET'])
+    def home_page(self):
+        return render_template('index.php')
 
-# Создаем документ и отображаем его на странице
-@app.route('/search', methods=['POST'])
-def make_recommendation():
-    search_req = request.form['search_req']
+    # Создаем документ и отображаем его на странице
+    @app.route('/search', methods=['POST'])
+    def make_recommendation(self):
+        search_req = request.form['search_req']
 
-    if recommendation_seeker.is_recommendation_service_available() is False:
-        return make_response("<h2>Сервис временно не доступен</h2>", 400)
+        if recommendation_seeker.is_recommendation_service_available() is False:
+            return make_response("<h2>Сервис временно не доступен</h2>", 400)
 
-    recommendations = []
-    mkbs = search_req.split("+")
-    browser = webdriver.Chrome('chromedriver.exe')
-    browser.implicitly_wait(60)
+        recommendations = []
+        mkbs = search_req.split("+")
+        browser = webdriver.Chrome('chromedriver.exe')
+        browser.implicitly_wait(60)
 
-    for mkb in mkbs:
-        if not recommendation_seeker.go_to_recommendation_page(browser, mkb):
-            return make_response("<h2>" + 'Код мкб - ' + mkb + ' введен неверно или не существует' + "</h2>", 401)
-        recommendations.append(recommendation_seeker.get_recommdendation_info(browser))
+        for mkb in mkbs:
+            if not recommendation_seeker.go_to_recommendation_page(browser, mkb):
+                return make_response("<h2>" + 'Код мкб - ' + mkb + ' введен неверно или не существует' + "</h2>", 401)
+            recommendations.append(recommendation_seeker.get_recommdendation_info(browser))
 
-    browser.close()
+        browser.close()
 
-    doc_name = make_pdf(recommendations)
+        doc_name = make_pdf(recommendations)
 
-    url = 'static/' + doc_name
-    timer = Timer(600, remove_file, args=['static/' + doc_name])
-    timer.start()
-    return render_template('pdf.html', url=url)
+        url = 'static/' + doc_name
+        timer = Timer(600, remove_file, args=['static/' + doc_name])
+        timer.start()
+        return render_template('pdf.html', url=url)
 
 
 if __name__ == '__main__':
