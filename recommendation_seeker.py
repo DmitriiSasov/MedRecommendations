@@ -60,7 +60,7 @@ class RecommendationSeeker:
 
     class ThesisSeeker:
 
-        tag = None
+        tag: PageElement = None
 
         def __init__(self, tag: PageElement):
             self.tag = tag
@@ -69,17 +69,25 @@ class RecommendationSeeker:
             self.tag = tag
 
         def contains_thesis(self):
-            return False
+            return self.tag.name.__contains__('ul') and \
+                   (self.__contains_LCR_and_LRE(self.tag) or
+                    self.tag.next_sibling is not None and
+                    self.__contains_LCR_and_LRE(self.tag.next_sibling) and
+                    self.tag.next_sibling.name.__contains__('p'))
+
+        def __contains_LCR_and_LRE(self, tag: PageElement):
+            # TODO
+            return
 
         def extract_thesis(self):
-            return False
+            
+            return Thesis()
 
     def __is_diagnosis_block(self, title: str):
         res = title == self.GLOBAL_DOCUMENT_SECTIONS[0]
         for section in self.DIAGNOSIS_SECTIONS:
             res = res or title == section
         return res
-
 
     def __find_diagnosis_theses(self):
         theses = {self.DIAGNOSIS_SECTIONS[0]: [], self.DIAGNOSIS_SECTIONS[2]: [], self.DIAGNOSIS_SECTIONS[4]: [],
@@ -103,4 +111,3 @@ class RecommendationSeeker:
                 html_parser = BeautifulSoup(section["content"], 'html.parser')
                 criteria_table = html_parser.find('table')
                 return criteria_table
-
