@@ -10,6 +10,18 @@ DB_USER = 'root'
 DB_PASS = 'SlenderHospice123'
 
 
+def insert_recommendation_in_db(recommendation):
+
+    con = pymysql.connect(host=DB_HOST, user=DB_USER,
+                          password=DB_PASS, database=DB_NAME, autocommit=True)
+
+    with con:
+        cur = con.cursor()
+
+        sql = "INSERT INTO `recommendation` (`name`, `table`) VALUES (%s, %s)"
+        cur.execute(sql, (recommendation.nozology_name, recommendation.table_tag))
+
+
 def get_recommendation_from_db(mkb):
 
     recommendation = Recommendation()
@@ -125,3 +137,200 @@ test1 = []
 test1.append(get_recommendation_from_db("i10"))
 
 make_pdf(test1)
+
+# rec = Recommendation()
+#
+# rec.nozology_name = "Болезнь"
+# rec.MKBs = ['D10', 'D11']
+# rec.table_tag = '<table border="0" width="100%" cellspacing="0" cellpadding="0">\
+# <tbody>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>№</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p><strong>Критерий качества</strong></p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center"><strong>E</strong><strong>ОК</strong></p>\
+# <p align="center"><strong>Класс и уровень</strong></p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/</strong></p>\
+# <p align="center"><strong>нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>1</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Установлен диагноз АГ согласно рекомендациям. Зафиксировано повышение офисного (клинического) АД выше 140 и/или 90 мм рт. ст. на повторных визитах, либо на основании СМАД<em> (</em>среднее за 24 часа ≥130 мм и/или ≥80 мм рт. ст.)</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IA</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>2</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Выполнен общий анализ крови</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">-</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>3</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Выполнен биохимический анализ крови (креатинин, расчетная скорость клубочковой фильтрации, глюкоза, калий, натрий, мочевая кислота, ОХ, ЛПНП, ТГ, ЛПВП)</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IB</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>4</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Выполнен общий анализ мочи</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IВ</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>5</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Выполнена качественная оценка протеинурии тест-полоской или количественное определение альбуминурии</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IВ</p>\
+# <p align="center">&nbsp;</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>6</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Выполнена ЭКГ в 12 отведениях</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IВ</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>7</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Даны рекомендации по модификации образа жизни (ограничение потребления натрия, увеличение физической активности, снижение избыточной массы тела, отказ от курения, ограничение потребления алкоголя)</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IA</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>8</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Поставлен клинический диагноз с указанием стадии заболевания, степени повышения АД (при отсутствии терапии), категории риска, наличия ПОМ и АКС</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">-</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>9</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>У пациентов с АГ 1-й степени, относящимся к категориям низкого/среднего риска, начата антигипертензивная лекарственная терапия одним из препаратов рекомендованных классов после 3-го месяца модификации образа жизни</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IA</p>\
+# <p align="center">&nbsp;</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>10</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Лицам с АГ второй степени и выше назначена комбинированная двухкомпонентная антигипертензивная терапия сразу после постановки диагноза и проведена ее интенсификация для достижения целевого АД.</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IA</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>11</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Достигнут целевой уровень&nbsp; САД&lt;140 мм рт. ст. и ДАД &lt; 90 мм рт. ст. через 3 месяца от начала лечения. При недостижении целевого АД приведено объяснение необходимости индивидуального уровня АД и скорости его снижения (плохая переносимость, побочные эффекты лекарственной терапии, низкая приверженность пациента к лечению, включая невыполнения рекомендаций врача, необходимость ревизии поставленного диагноза для исключения симптоматической АГ, наличие сопутствующей патологии или лекарственной терапии, затрудняющей контроль АД)</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">IA</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# <tr>\
+# <td valign="top" width="8%">\
+# <p><strong>12</strong></p>\
+# </td>\
+# <td valign="top" width="58%">\
+# <p>Пациент взят под диспансерное наблюдение</p>\
+# </td>\
+# <td valign="top" width="21%">\
+# <p align="center">-</p>\
+# </td>\
+# <td valign="top" width="10%">\
+# <p align="center"><strong>Да/нет</strong></p>\
+# </td>\
+# </tr>\
+# </tbody>\
+# </table>'
+#
+# insert_recommendation_in_db(rec)

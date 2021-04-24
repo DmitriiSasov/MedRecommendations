@@ -113,7 +113,7 @@ def make_pdf(recommendations):
 # element - один тезис
 def make_thesis(pdf, element):
     pdf.set_font('times', size=16)
-    text_thesis = '• ' + element.text[1:]
+    text_thesis = '• ' + element.text[0:]
     text_thesis = text_thesis.replace('й', 'й')
     pdf.multi_cell(0, 6, txt=text_thesis)
     pdf.ln(5)
