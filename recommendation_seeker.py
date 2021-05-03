@@ -41,21 +41,23 @@ class RecommendationSeeker:
         for section in self.__recommendation_content_json['obj']['sections']:
             if section['title'] == self.GLOBAL_DOCUMENT_SECTIONS[1]:
                 html_parser = BeautifulSoup(section["content"], 'html.parser')
-                all_headers = [html_parser.find_all('h1'), html_parser.find_all('h2'), html_parser.find_all('h3')]
+                all_headers = [html_parser.find_all('h2'), html_parser.find_all('h3')]
                 medical_treatment_tag = None
                 for header_group in all_headers:
                     for header in header_group:
-                        if bool(re.search('(((Медикаментозное)|(Лекарственное)) лечение)|(((Медикаментозная)|(Лекарственная)) терапия)',
+                        if bool(re.search(
+                                '(((Медикаментозное)|(Лекарственное)) лечение)|(((Медикаментозная)|(Лекарственная)) терапия)',
                                 header.text)):
                             medical_treatment_tag = header
                             next_tag = header.next_element
                             thesis_seeker = self.ThesisSeeker(next_tag)
-                            while not next_tag.name.__contains__('h1') and not next_tag.name.__contains__('h2') \
-                                    and not next_tag.name.__contains__('h3'):
+                            while next_tag is not None and not ((next_tag.name == 'h2' or next_tag.name == 'h3') and
+                                                                header.name < next_tag.name):
+                                thesis_seeker.set_tag(next_tag)
                                 if thesis_seeker.contains_thesis():
                                     theses.append(thesis_seeker.extract_thesis())
                                 next_tag = next_tag.next_element
-                                thesis_seeker.set_tag(next_tag)
+
         return theses
 
     class ThesisSeeker:
@@ -80,7 +82,6 @@ class RecommendationSeeker:
             return
 
         def extract_thesis(self):
-            
             return Thesis()
 
     def __is_diagnosis_block(self, title: str):
