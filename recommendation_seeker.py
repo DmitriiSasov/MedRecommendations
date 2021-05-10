@@ -1,5 +1,7 @@
 import re
 import time
+from typing import Dict
+
 import requests
 import json
 
@@ -90,17 +92,61 @@ class RecommendationSeeker:
             res = res or title == section
         return res
 
+    def __is_diagnosis_subblock(self, title: str):
+        res = False
+        for diagnonis_section in self.DIAGNOSIS_SECTIONS:
+            res = res or title.__contains__(diagnonis_section)
+        return res
+
+    def __transform_diagn_section_name_to_my_section_name(self, previous_section_name: str):
+        name_without_numbers = ''
+        words = previous_section_name.split(' ')
+        if words[0] != '' and not words[0][0].isdigit():
+            name_without_numbers += ' ' + words[0]
+        for index in range(1, len(words)):
+            if words[index] != '' and not words[index][0].isdigit():
+                name_without_numbers += ' ' + words[index]
+
+        new_section_name = ''
+        if self.DIAGNOSIS_SECTIONS_TO_MY_DOC_SECTIONS.keys().__contains__(name_without_numbers):
+            new_section_name = self.DIAGNOSIS_SECTIONS_TO_MY_DOC_SECTIONS[name_without_numbers]
+
+        return new_section_name
+
+    def __extract_theses_from_block(self, block_header: PageElement):
+        theses = []
+        current_subblock_tag = block_header.next_element
+        thesis_seeker = self.ThesisSeeker(current_subblock_tag)
+        while current_subblock_tag is not None and not ((current_subblock_tag.name == 'h2' or
+                                                         current_subblock_tag.name == 'h3') and
+                                                        block_header.name < current_subblock_tag.name):
+            thesis_seeker.set_tag(current_subblock_tag)
+            if thesis_seeker.contains_thesis():
+                theses.append(thesis_seeker.extract_thesis())
+            current_subblock_tag = current_subblock_tag.next_element
+        return theses
+
     def __find_diagnosis_theses(self):
         theses = {self.DIAGNOSIS_SECTIONS[0]: [], self.DIAGNOSIS_SECTIONS[2]: [], self.DIAGNOSIS_SECTIONS[4]: [],
                   self.DIAGNOSIS_SECTIONS[5]: []}
         for section in self.__recommendation_content_json['obj']['sections']:
             if self.__is_diagnosis_block(section['title']) and section["content"] is not None:
                 html_parser = BeautifulSoup(section["content"], 'html.parser')
-                if section['title'] != "2. Диагностика":
-
-                    for tag in html_parser.findAll(True, recursive=False):
-                        thesis_seeker = self.ThesisSeeker(tag)
-
+                if section['title'].__contains__(self.GLOBAL_DOCUMENT_SECTIONS[0]):
+                    all_headers = [html_parser.find_all('h2'), html_parser.find_all('h3')]
+                    for header_group in all_headers:
+                        for header in header_group:
+                            if self.__is_diagnosis_subblock(header.text):
+                                theses[self.__transform_diagn_section_name_to_my_section_name(header.text)] = \
+                                    self.__extract_theses_from_block(header)
+                else:
+                    all_tags = html_parser.findAll(True, recursive=False)
+                    thesis_seeker = self.ThesisSeeker(all_tags[0])
+                    for tag in all_tags:
+                        thesis_seeker.set_tag(tag)
+                        if thesis_seeker.contains_thesis():
+                            theses[self.__transform_diagn_section_name_to_my_section_name(section['title'])] = \
+                                (thesis_seeker.extract_thesis())
         return theses
 
     def __find_mkbs(self):
