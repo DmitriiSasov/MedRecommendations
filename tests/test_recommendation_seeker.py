@@ -26,6 +26,17 @@ class TestParser(unittest.TestCase):
         res = self.rec_seeker._RecommendationSeeker__find_mkbs()
         self.assertEqual(res, ['C15', 'C16.0'])
 
+    def test_is_diagnosis_block_no_diagnosis_block(self):
+        res = self.rec_seeker._RecommendationSeeker__is_diagnosis_block('Термины и определения')
+        self.assertFalse(res)
+
+    def test_is_diagnosis_block_diagnosis_block(self):
+        res = self.rec_seeker._RecommendationSeeker__is_diagnosis_block('2. Диагностика')
+        self.assertTrue(res)
+
+    def test_is_diagnosis_block_diagnosis_subblock(self):
+        res = self.rec_seeker._RecommendationSeeker__is_diagnosis_block('2.3 Лабораторные диагностические исследования')
+        self.assertTrue(res)
 
     def test_get_recommendation_page_url_empty_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
