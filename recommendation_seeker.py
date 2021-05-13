@@ -70,12 +70,33 @@ class RecommendationSeeker:
                     self.__contains_LCR_and_LRE(self.tag.next_sibling) and
                     self.tag.next_sibling.name.__contains__('p'))
 
-        def __contains_LCR_and_LRE(self, tag: PageElement):
-            # TODO
-            return
+        def __contains_LCR_and_LRE(self, text: str):
+            return re.search(r'(УУР.*УДД)|(У|уровень убедительности рекомендаций.*уровень достоверности доказательств)',
+                      text) is not None
+
+        def __get_LCR(self, text: str):
+            res = re.match(r'((?<=ровень убедительности рекомендаций )|(?<=УУР ))\w((?= )|(?=\())', text)
+            return res.group()
+
+        def __get_LRE(self, text: str):
+            res = re.match(r'"((?<=ровень достоверности доказательств )|(?<=ровень достоверности доказательств - )|(?<=УДД )|(?<=УДД - ))\d|[IV]{1,3}((?= )|(?=\)))"gm', text)
+            return res.group()
 
         def extract_thesis(self):
-            return Thesis()
+            thesis = Thesis()
+            if self.contains_thesis():
+                if self.__contains_LCR_and_LRE(self.tag.text):
+                    for sentence in self.tag.text.split('.'):
+                        if not self.__contains_LCR_and_LRE(sentence):
+                            thesis.text += sentence + '.'
+                        else:
+                            thesis.LCR = self.__get_LCR(sentence)
+                            thesis.LRE = self.__get_LRE(sentence)
+                else:
+                    thesis.text = self.tag.text
+                    thesis.LCR = self.__get_LCR(self.tag.next_sibling.text)
+                    thesis.LRE = self.__get_LRE(self.tag.next_sibling.text)
+            return thesis
 
     def __is_diagnosis_block(self, title: str):
         res = title == self.GLOBAL_DOCUMENT_SECTIONS[0]
