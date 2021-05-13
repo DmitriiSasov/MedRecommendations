@@ -110,14 +110,14 @@ class RecommendationSeeker:
     def __transform_diagn_section_name_to_my_section_name(self, previous_section_name: str):
         name_without_numbers = ''
         words = previous_section_name.split(' ')
-        if words[0] != '' and not words[0][0].isdigit():
-            name_without_numbers += ' ' + words[0]
         for index in range(1, len(words)):
             if words[index] != '' and not words[index][0].isdigit():
-                name_without_numbers += ' ' + words[index]
+                if name_without_numbers != '':
+                    name_without_numbers += ' '
+                name_without_numbers += words[index]
 
         new_section_name = ''
-        if self.DIAGNOSIS_SECTIONS_TO_MY_DOC_SECTIONS.keys().__contains__(name_without_numbers):
+        if list(self.DIAGNOSIS_SECTIONS_TO_MY_DOC_SECTIONS.keys()).count(name_without_numbers) > 0:
             new_section_name = self.DIAGNOSIS_SECTIONS_TO_MY_DOC_SECTIONS[name_without_numbers]
 
         return new_section_name
