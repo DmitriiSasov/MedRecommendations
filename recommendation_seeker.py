@@ -99,10 +99,7 @@ class RecommendationSeeker:
             return thesis
 
     def __is_diagnosis_block(self, title: str):
-        res = title == self.GLOBAL_DOCUMENT_SECTIONS[0]
-        for section in self.DIAGNOSIS_SECTIONS:
-            res = res or title.__contains__(section)
-        return res
+        return title == self.GLOBAL_DOCUMENT_SECTIONS[0] or self.__is_diagnosis_subblock(title)
 
     def __is_diagnosis_subblock(self, title: str):
         res = False
