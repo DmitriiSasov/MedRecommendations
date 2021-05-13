@@ -1,5 +1,7 @@
+import json
 import unittest
 
+import requests
 from selenium import webdriver
 
 import recommendation_seeker
@@ -8,6 +10,17 @@ import recommendation_seeker
 class TestParser(unittest.TestCase):
 
     # Создать тесты на случаи, когда не находятся теги или содержимое внутри тегов.
+
+    rec_seeker = recommendation_seeker.RecommendationSeeker()
+
+    def test_find_criteria(self):
+        recommendation_content = requests.get(self.rec_seeker.RECOMMENDATION_URL.replace('__ID', '504_2'))
+        self.rec_seeker._RecommendationSeeker__recommendation_content_json = json.loads(recommendation_content.text)
+        res = self.rec_seeker._RecommendationSeeker__find_criteria()
+        self.assertTrue(res.text.__contains__('Выполнено КТорганов грудной полости, брюшной полости с '
+                                              'контрастирование, МРТ малого таза с контрастированием'))
+
+    
 
     def test_get_recommendation_page_url_empty_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
