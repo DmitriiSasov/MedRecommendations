@@ -20,7 +20,12 @@ class TestParser(unittest.TestCase):
         self.assertTrue(res.text.__contains__('Выполнено КТорганов грудной полости, брюшной полости с '
                                               'контрастирование, МРТ малого таза с контрастированием'))
 
-    
+    def test_find_mkbs(self):
+        recommendation_content = requests.get(self.rec_seeker.RECOMMENDATION_URL.replace('__ID', '237_5'))
+        self.rec_seeker._RecommendationSeeker__recommendation_content_json = json.loads(recommendation_content.text)
+        res = self.rec_seeker._RecommendationSeeker__find_mkbs()
+        self.assertEqual(res, ['C15', 'C16.0'])
+
 
     def test_get_recommendation_page_url_empty_nosology_name(self):
         browser = webdriver.Chrome('chromedriver.exe')
