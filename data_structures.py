@@ -19,12 +19,23 @@ class Recommendation:
 
 class Thesis:
 
-    #Текст тезиса
-    text = ""
+    def __init__(self):
+        # Текст тезиса
+        self.text = ""
+        # УУР (A-C)
+        self.LCR = ""
+        # УДД (1-5)
+        self.LRE = ""
 
-    #УУР (A-C)
-    LCR = ""
+    def __init__(self, text: str, LCR: str, LRE: str):
+        self.LRE = LRE
+        self.LCR = LCR
+        self.text = text
 
-    #УДД (1-5)
-    LRE = ""
+
+
+
+
+
+
 
