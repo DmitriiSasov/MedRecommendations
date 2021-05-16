@@ -39,7 +39,11 @@ class RecommendationSeeker:
         recommendation.table_tag = self.__find_criteria()
         recommendation.diagnosticTheses = self.__find_diagnosis_theses()
         recommendation.treatmentTheses = self.__find_treatment_theses()
+        recommendation.creation_date = self.__find_creation_date()
         return recommendation
+
+    def __find_creation_date(self):
+        return self.__recommendation_content_json['created']
 
     def __find_treatment_theses(self):
         theses = []

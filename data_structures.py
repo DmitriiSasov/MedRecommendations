@@ -16,6 +16,8 @@ class Recommendation:
 
     table_tag = ""
 
+    creation_date = ""
+
 
 class Thesis:
 
