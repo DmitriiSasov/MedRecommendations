@@ -98,3 +98,90 @@ class TestParser(unittest.TestCase):
             self.assertTrue(res[index].text.__contains__(expected_thesis_text[index]))
             self.assertEqual(res[index].LCR, expected_thesis_LCR[index])
             self.assertEqual(res[index].LRE, expected_thesis_LRE[index])
+
+    def test_find_diagnosis_theses_has_global_diagnosis_subblocks(self):
+        recommendation_content = requests.get(self.rec_seeker.RECOMMENDATION_URL.replace('__ID', '598_1'))
+        self.rec_seeker._RecommendationSeeker__recommendation_content_json = json.loads(recommendation_content.text)
+        res = self.rec_seeker._RecommendationSeeker__find_diagnosis_theses()
+        expected_thesis_text = {RecommendationSeeker.DIAGNOSIS_SECTIONS[0]: ['Рекомендовано проведение осмотра'],
+                                RecommendationSeeker.DIAGNOSIS_SECTIONS[2]: ['Рекомендовано с целью дифференциальной'],
+                                RecommendationSeeker.DIAGNOSIS_SECTIONS[4]: ['Рекомендованы для диагностики ДДМЖ',
+                                                                             'Рекомендована рентгеновская маммография',
+                                                                             'Рекомендуется ультразвуковое исследование',
+                                                                             'Не рекомендуется проведение МРТ',
+                                                                             'Рекомендовано применение системы'
+                                                                             ],
+                                RecommendationSeeker.DIAGNOSIS_SECTIONS[5]: ['Рекомендована трепан-биопсия',
+                                                                             'Рекомендовано динамическое наблюдение',
+                                                                             'Рекомендовано динамическое наблюдение с контролем через 6 мес',
+                                                                             'Рекомендовано выполнение пункционной',
+                                                                             'Рекомендуется выполнение биопсии',
+                                                                             'Рекомендовано проведение МРТ с',
+                                                                             'Рекомендовано взятие мазка для',
+                                                                             'Рекомендована радиальная протоковая',
+                                                                             'Не рекомендовано выполнение МРТ',
+                                                                             'Рекомендовано выполнение трепан-биопсии',
+                                                                             'Рекомендована трепан-биопсия',
+                                                                             'Рекомендуется выполнять пункционную',
+                                                                             'Рекомендуется выполнять трепан-биопсию',
+                                                                             'Рекомендовано выполнять пациентам с узловыми',
+                                                                             'Рекомендовано выполнение вакуумной'
+                                                                             ]
+                                }
+        expected_thesis_LCR = {
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[0]: ['С'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[2]: ['С'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[4]: ['С', 'С', 'В', 'С', 'С'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[5]: ['В', 'C', 'C', 'С', 'С', 'С', 'C', 'C',
+                                                         'С', 'С', 'С', 'С', 'С', 'С', 'А'],
+        }
+        expected_thesis_LRE = {
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[0]: ['5'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[2]: ['5'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[4]: ['5', '5', '2', '5', '5'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[5]: ['3', '4', '5', '4', '4', '5', '5', '5',
+                                                         '4', '4', '5', '5', '5', '5', '2'],
+        }
+        self.assertEqual(len(res), len(expected_thesis_text))
+        for key in res.keys():
+            self.assertEqual(len(res[key]), len(expected_thesis_text[key]))
+            for index in range(0, len(res[key])):
+                self.assertTrue(res[key][index].text.__contains__(expected_thesis_text[key][index]))
+                self.assertEqual(res[key][index].LCR, expected_thesis_LCR[key][index])
+                self.assertEqual(res[key][index].LRE, expected_thesis_LRE[key][index])
+
+    def test_find_diagnosis_theses_has_no_global_diagnosis_subblocks(self):
+        recommendation_content = requests.get(self.rec_seeker.RECOMMENDATION_URL.replace('__ID', '497_1'))
+        self.rec_seeker._RecommendationSeeker__recommendation_content_json = json.loads(recommendation_content.text)
+        res = self.rec_seeker._RecommendationSeeker__find_diagnosis_theses()
+        expected_thesis_text = {RecommendationSeeker.DIAGNOSIS_SECTIONS[0]: [],
+                                RecommendationSeeker.DIAGNOSIS_SECTIONS[2]: ['Рекомендуется всем пациентам выполнять общий',
+                                                                             'Рекомендуется всем пациентам выполнять: анализ крови',
+                                                                             'Рекомендуется всем пациентам выполнять общий',
+                                                                             'Рекомендуется всем пациентам выполнять определение уровня'
+                                                                             ],
+                                RecommendationSeeker.DIAGNOSIS_SECTIONS[4]: ['Рекомендуется всем пациентам с подозрением',
+                                                                             'Проведение дополнительных методов обследования',
+                                                                             'Рекомендуется проведение ПЭТ-КТ с фтордезоксиглюкозой',
+                                                                             ],
+                                RecommendationSeeker.DIAGNOSIS_SECTIONS[5]: ['Рекомендуется при выявлении поражения плевры']
+                                }
+        expected_thesis_LCR = {
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[0]: [],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[2]: ['С', 'C', 'С', 'C'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[4]: ['В', 'В', 'В'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[5]: ['В'],
+        }
+        expected_thesis_LRE = {
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[0]: [],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[2]: ['4', '4', '4', '4'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[4]: ['2', '2', '2'],
+            RecommendationSeeker.DIAGNOSIS_SECTIONS[5]: ['2'],
+        }
+        self.assertEqual(len(res), len(expected_thesis_text))
+        for key in res.keys():
+            self.assertEqual(len(res[key]), len(expected_thesis_text[key]))
+            for index in range(0, len(res[key])):
+                self.assertTrue(res[key][index].text.__contains__(expected_thesis_text[key][index]))
+                self.assertEqual(res[key][index].LCR, expected_thesis_LCR[key][index])
+                self.assertEqual(res[key][index].LRE, expected_thesis_LRE[key][index])
