@@ -39,6 +39,7 @@ class RecommendationSeeker:
         recommendation.table_tag = self.__find_criteria()
         recommendation.diagnosticTheses = self.__find_diagnosis_theses()
         recommendation.treatmentTheses = self.__find_treatment_theses()
+        return recommendation
 
     def __find_treatment_theses(self):
         theses = []
