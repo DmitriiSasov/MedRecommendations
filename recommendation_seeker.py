@@ -24,6 +24,8 @@ class RecommendationSeeker:
                                              'Инструментальная диагностика': 'Инструментальная диагностика',
                                              'Иные диагностические исследования': 'Иные диагностические исследования'}
 
+    REGEX_FOR_LONG_LCR_AND_LRE = r'Уровень убедительности рекомендаций ([АВСA-C]) \(уровень достоверности доказательств – ([1-5]|[IV]{1,3})\)'
+    REGEX_FOR_SHORT_LCR_AND_LRE = r'УУР ([АВСA-C])[;,] УДД ([1-5]|[IV]{1,3})'
     __recommendation_content_json = None
 
     def find_recommendation(self, identifier: str):
@@ -65,25 +67,36 @@ class RecommendationSeeker:
 
         def contains_thesis(self):
             return self.tag.name.__contains__('ul') and \
-                   (self.__contains_LCR_and_LRE(self.tag) or
+                   (self.__contains_LCR_and_LRE(self.tag.text) or
                     self.tag.next_sibling is not None and
-                    self.__contains_LCR_and_LRE(self.tag.next_sibling) and
+                    self.__contains_LCR_and_LRE(self.tag.next_sibling.text) and
                     self.tag.next_sibling.name.__contains__('p'))
 
         def __contains_LCR_and_LRE(self, text: str):
-            return re.search(r'(УУР.*УДД)|(У|уровень убедительности рекомендаций.*уровень достоверности доказательств)',
-                      text) is not None
+            res = re.search(RecommendationSeeker.REGEX_FOR_LONG_LCR_AND_LRE, text) is not None or \
+                  re.search(RecommendationSeeker.REGEX_FOR_SHORT_LCR_AND_LRE, text) is not None
+            return res
 
         def __get_LCR(self, text: str):
-            res = re.match(r'((?<=ровень убедительности рекомендаций )|(?<=УУР ))\w((?= )|(?=\())', text)
-            return res.group()
+            res = re.search(RecommendationSeeker.REGEX_FOR_LONG_LCR_AND_LRE, text)
+            if res is None:
+                res = re.search(RecommendationSeeker.REGEX_FOR_SHORT_LCR_AND_LRE, text)
+            if res is None:
+                return ''
+            else:
+                return res.group(1)
 
         def __get_LRE(self, text: str):
-            res = re.match(r'"((?<=ровень достоверности доказательств )|(?<=ровень достоверности доказательств - )|(?<=УДД )|(?<=УДД - ))\d|[IV]{1,3}((?= )|(?=\)))"gm', text)
-            return res.group()
+            res = re.search(RecommendationSeeker.REGEX_FOR_LONG_LCR_AND_LRE, text)
+            if res is None:
+                res = re.search(RecommendationSeeker.REGEX_FOR_SHORT_LCR_AND_LRE, text)
+            if res is None:
+                return ''
+            else:
+                return res.group(2)
 
         def extract_thesis(self):
-            thesis = Thesis()
+            thesis = Thesis("", "", "")
             if self.contains_thesis():
                 if self.__contains_LCR_and_LRE(self.tag.text):
                     for sentence in self.tag.text.split('.'):
@@ -124,15 +137,15 @@ class RecommendationSeeker:
 
     def __extract_theses_from_block(self, block_header: PageElement):
         theses = []
-        current_subblock_tag = block_header.next_element
+        current_subblock_tag = block_header.next_sibling
         thesis_seeker = self.ThesisSeeker(current_subblock_tag)
         while current_subblock_tag is not None and not ((current_subblock_tag.name == 'h2' or
                                                          current_subblock_tag.name == 'h3') and
-                                                        block_header.name < current_subblock_tag.name):
+                                                    block_header.name >= current_subblock_tag.name):
             thesis_seeker.set_tag(current_subblock_tag)
             if thesis_seeker.contains_thesis():
                 theses.append(thesis_seeker.extract_thesis())
-            current_subblock_tag = current_subblock_tag.next_element
+            current_subblock_tag = current_subblock_tag.next_sibling
         return theses
 
     def __find_diagnosis_theses(self):
