@@ -185,6 +185,10 @@ class RecommendationSeeker:
                         # находим заголовок нужного раздела диагностики
                         if (all_tags[index].name == 'h2' or all_tags[index].name == 'h3') and \
                                 self.__is_diagnosis_subblock(all_tags[index].text):
+                            if current_header_index != -1:
+                                theses[self.__transform_diagn_section_name_to_my_section_name(
+                                    all_tags[current_header_index].text)] = self.__extract_theses_from_block(tags)
+                            tags = []
                             current_header_index = index
                         # находим заголовок ненужного раздела диагностики
                         if current_header_index != -1 and \
@@ -193,16 +197,21 @@ class RecommendationSeeker:
                                 all_tags[current_header_index].name >= all_tags[index].name:
                             theses[self.__transform_diagn_section_name_to_my_section_name(
                                 all_tags[current_header_index].text)] = self.__extract_theses_from_block(tags)
-                            current_header_index = - 1
                             tags = []
+                            current_header_index = - 1
                         # добавляем тезис из текущего раздела
                         if current_header_index != -1:
                             tags.append(all_tags[index])
                         index += 1
-
+                        if index == len(all_tags) and current_header_index != -1:
+                            theses[self.__transform_diagn_section_name_to_my_section_name(
+                                all_tags[current_header_index].text)] = self.__extract_theses_from_block(tags)
+                            tags = []
                 else:
                     all_tags = html_parser.findAll(['ul', 'p'], recursive=False)
-                    self.__extract_theses_from_block(all_tags)
+                    theses[self.__transform_diagn_section_name_to_my_section_name(section['title'])] = \
+                        self.__extract_theses_from_block(all_tags)
+        return theses
 
     def __find_mkbs(self):
         return list(filter(lambda a: a != '', re.split(r'[^\wа-яА-Я.]', self.__recommendation_content_json['mkb'])))
