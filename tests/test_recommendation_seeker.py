@@ -4,7 +4,6 @@ import unittest
 import requests
 from selenium import webdriver
 
-import recommendation_seeker
 from recommendation_seeker import RecommendationSeeker
 from data_structures import Thesis
 
@@ -12,7 +11,7 @@ from data_structures import Thesis
 class TestParser(unittest.TestCase):
     # Создать тесты на случаи, когда не находятся теги или содержимое внутри тегов.
 
-    rec_seeker = recommendation_seeker.RecommendationSeeker()
+    rec_seeker = RecommendationSeeker()
 
     def test_find_criteria(self):
         recommendation_content = requests.get(self.rec_seeker.RECOMMENDATION_URL.replace('__ID', '504_2'))
@@ -92,6 +91,7 @@ class TestParser(unittest.TestCase):
                                 ]
         expected_thesis_LCR = ['B', 'С', 'С', 'В', 'С', 'С', 'С']
         expected_thesis_LRE = ['2', '5', '5', '2', '5', '5', '5']
+
 
         self.assertEqual(len(res), expected_thesis_count)
         for index in range(0, len(res)):
