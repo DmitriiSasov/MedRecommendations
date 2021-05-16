@@ -24,7 +24,7 @@ class RecommendationSeeker:
                                              'Инструментальная диагностика': 'Инструментальная диагностика',
                                              'Иные диагностические исследования': 'Иные диагностические исследования'}
 
-    REGEX_FOR_LONG_LCR_AND_LRE = r'Уровень убедительности рекомендаций ([АВСA-C]) \(уровень достоверности доказательств – ([1-5]|[IV]{1,3})\)'
+    REGEX_FOR_LONG_LCR_AND_LRE = r'Уровень убедительности рекомендаций ([АВСA-C]) \(уровень достоверности доказательств [-–—] ([1-5]|[IV]{1,3})\)'
     REGEX_FOR_SHORT_LCR_AND_LRE = r'УУР ([АВСA-C])[;,] УДД ([1-5]|[IV]{1,3})'
     __recommendation_content_json = None
 
@@ -45,13 +45,25 @@ class RecommendationSeeker:
         for section in self.__recommendation_content_json['obj']['sections']:
             if section['title'] == self.GLOBAL_DOCUMENT_SECTIONS[1]:
                 html_parser = BeautifulSoup(section["content"], 'html.parser')
-                all_headers = [html_parser.find_all('h2'), html_parser.find_all('h3')]
-                for header_group in all_headers:
-                    for header in header_group:
-                        if bool(re.search(
-                                '(((Медикаментозное)|(Лекарственное)) лечение)|(((Медикаментозная)|(Лекарственная)) терапия)',
-                                header.text)):
-                            theses = self.__extract_theses_from_block(header)
+                all_tags = html_parser.find_all(['h2', 'h3', 'ul', 'p'], recursive=False)
+                treatment_header_tag_index = -1
+                index = 0
+                while index < len(all_tags) and treatment_header_tag_index == -1:
+                    if (all_tags[index].name == 'h2' or all_tags[index].name == 'h3') and \
+                            bool(re.search(
+                                r'(((Медикаментозное)|(Лекарственное)) лечение)|(((Медикаментозная)|(Лекарственная)) терапия)',
+                                all_tags[index].text)):
+                        treatment_header_tag_index = index
+                    index += 1
+                if treatment_header_tag_index != -1:
+                    index = treatment_header_tag_index + 1
+                    tags = []
+                    while index < len(all_tags) and not ((all_tags[index].name == 'h2' or all_tags[index].name == 'h3')
+                                                         and all_tags[treatment_header_tag_index].name >= all_tags[
+                                                             index].name):
+                        tags.append(all_tags[index])
+                        index += 1
+                    theses = self.__extract_theses_from_block(tags)
 
         return theses
 
@@ -59,25 +71,33 @@ class RecommendationSeeker:
 
         tag: PageElement = None
 
-        def __init__(self, tag: PageElement):
-            self.tag = tag
+        next_tag: PageElement = None
 
-        def set_tag(self, tag: PageElement):
+        def __init__(self, tag: PageElement, next_tag):
             self.tag = tag
+            self.next_tag = next_tag
+
+        def set_tags(self, tag: PageElement, next_tag):
+            self.tag = tag
+            self.next_tag = next_tag
 
         def contains_thesis(self):
-            return self.tag.name.__contains__('ul') and \
-                   (self.__contains_LCR_and_LRE(self.tag.text) or
-                    self.tag.next_sibling is not None and
-                    self.__contains_LCR_and_LRE(self.tag.next_sibling.text) and
-                    self.tag.next_sibling.name.__contains__('p'))
+            try:
+                res = self.tag.name.__contains__('ul') and \
+                      (self.__contains_LCR_and_LRE(self.tag.text) or
+                       self.next_tag is not None and
+                       self.__contains_LCR_and_LRE(self.next_tag.text) and
+                       self.next_tag.name.__contains__('p'))
+            except Exception:
+                res = False
+            return res
 
-        def __contains_LCR_and_LRE(self, text: str):
+        def __contains_LCR_and_LRE(self, text):
             res = re.search(RecommendationSeeker.REGEX_FOR_LONG_LCR_AND_LRE, text) is not None or \
                   re.search(RecommendationSeeker.REGEX_FOR_SHORT_LCR_AND_LRE, text) is not None
             return res
 
-        def __get_LCR(self, text: str):
+        def __get_LCR(self, text):
             res = re.search(RecommendationSeeker.REGEX_FOR_LONG_LCR_AND_LRE, text)
             if res is None:
                 res = re.search(RecommendationSeeker.REGEX_FOR_SHORT_LCR_AND_LRE, text)
@@ -86,7 +106,7 @@ class RecommendationSeeker:
             else:
                 return res.group(1)
 
-        def __get_LRE(self, text: str):
+        def __get_LRE(self, text):
             res = re.search(RecommendationSeeker.REGEX_FOR_LONG_LCR_AND_LRE, text)
             if res is None:
                 res = re.search(RecommendationSeeker.REGEX_FOR_SHORT_LCR_AND_LRE, text)
@@ -107,8 +127,8 @@ class RecommendationSeeker:
                             thesis.LRE = self.__get_LRE(sentence)
                 else:
                     thesis.text = self.tag.text
-                    thesis.LCR = self.__get_LCR(self.tag.next_sibling.text)
-                    thesis.LRE = self.__get_LRE(self.tag.next_sibling.text)
+                    thesis.LCR = self.__get_LCR(self.next_tag.text)
+                    thesis.LRE = self.__get_LRE(self.next_tag.text)
             return thesis
 
     def __is_diagnosis_block(self, title: str):
@@ -135,17 +155,19 @@ class RecommendationSeeker:
 
         return new_section_name
 
-    def __extract_theses_from_block(self, block_header: PageElement):
+    def __extract_theses_from_block(self, tags: list):
         theses = []
-        current_subblock_tag = block_header.next_sibling
-        thesis_seeker = self.ThesisSeeker(current_subblock_tag)
-        while current_subblock_tag is not None and not ((current_subblock_tag.name == 'h2' or
-                                                         current_subblock_tag.name == 'h3') and
-                                                    block_header.name >= current_subblock_tag.name):
-            thesis_seeker.set_tag(current_subblock_tag)
+        if len(tags) == 0:
+            return theses
+        thesis_seeker = self.ThesisSeeker(tags[0], None)
+        for index in range(0, len(tags)):
+            if index == len(tags) - 1:
+                thesis_seeker.set_tags(tags[index], None)
+            else:
+                thesis_seeker.set_tags(tags[index], tags[index + 1])
             if thesis_seeker.contains_thesis():
                 theses.append(thesis_seeker.extract_thesis())
-            current_subblock_tag = current_subblock_tag.next_sibling
+
         return theses
 
     def __find_diagnosis_theses(self):
@@ -155,21 +177,32 @@ class RecommendationSeeker:
             if self.__is_diagnosis_block(section['title']) and section["content"] is not None:
                 html_parser = BeautifulSoup(section["content"], 'html.parser')
                 if section['title'].__contains__(self.GLOBAL_DOCUMENT_SECTIONS[0]):
-                    all_headers = [html_parser.find_all('h2'), html_parser.find_all('h3')]
-                    for header_group in all_headers:
-                        for header in header_group:
-                            if self.__is_diagnosis_subblock(header.text):
-                                theses[self.__transform_diagn_section_name_to_my_section_name(header.text)] = \
-                                    self.__extract_theses_from_block(header)
+                    all_tags = html_parser.find_all(['h2', 'h3', 'ul', 'p'], recursive=False)
+                    index = 0
+                    tags = []
+                    current_header_index = -1
+                    while index < len(all_tags):
+                        # находим заголовок нужного раздела диагностики
+                        if (all_tags[index].name == 'h2' or all_tags[index].name == 'h3') and \
+                                self.__is_diagnosis_subblock(all_tags[index].text):
+                            current_header_index = index
+                        # находим заголовок ненужного раздела диагностики
+                        if current_header_index != -1 and \
+                                (all_tags[index].name == 'h2' or all_tags[index].name == 'h3') and \
+                                not self.__is_diagnosis_subblock(all_tags[index].text) and \
+                                all_tags[current_header_index].name >= all_tags[index].name:
+                            theses[self.__transform_diagn_section_name_to_my_section_name(
+                                all_tags[current_header_index].text)] = self.__extract_theses_from_block(tags)
+                            current_header_index = - 1
+                            tags = []
+                        # добавляем тезис из текущего раздела
+                        if current_header_index != -1:
+                            tags.append(all_tags[index])
+                        index += 1
+
                 else:
-                    all_tags = html_parser.findAll(True, recursive=False)
-                    thesis_seeker = self.ThesisSeeker(all_tags[0])
-                    for tag in all_tags:
-                        thesis_seeker.set_tag(tag)
-                        if thesis_seeker.contains_thesis():
-                            theses[self.__transform_diagn_section_name_to_my_section_name(section['title'])] = \
-                                (thesis_seeker.extract_thesis())
-        return theses
+                    all_tags = html_parser.findAll(['ul', 'p'], recursive=False)
+                    self.__extract_theses_from_block(all_tags)
 
     def __find_mkbs(self):
         return list(filter(lambda a: a != '', re.split(r'[^\wа-яА-Я.]', self.__recommendation_content_json['mkb'])))
