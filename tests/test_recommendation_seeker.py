@@ -5,6 +5,7 @@ import requests
 from selenium import webdriver
 
 import recommendation_seeker
+from recommendation_seeker import RecommendationSeeker
 from data_structures import Thesis
 
 
@@ -80,16 +81,17 @@ class TestParser(unittest.TestCase):
         recommendation_content = requests.get(self.rec_seeker.RECOMMENDATION_URL.replace('__ID', '622_4'))
         self.rec_seeker._RecommendationSeeker__recommendation_content_json = json.loads(recommendation_content.text)
         res = self.rec_seeker._RecommendationSeeker__find_treatment_theses()
-        expected_thesis_count = 6
+        expected_thesis_count = 7
         expected_thesis_text = ['Рекомендуется у детей с СД2 в возрасте >10 лет',
                                 'Рекомендуется у детей с СД2 применение инсулинов длительного',
                                 'Рекомендуется у детей с СД2 применение инсулинов',
                                 'Рекомендуется у детей в возрасте >10 лет с СД2',
+                                'Рекомендуется у детей с СД2 при проведении',
                                 'Рекомендуется у детей с СД2, получающих инсулинотерапию, проводить',
                                 'Рекомендуется у детей с СД2, получающих инсулинотерапию, при каждой инъекции',
                                 ]
-        expected_thesis_LCR = ['B', 'С', 'С', 'В', 'С', 'С']
-        expected_thesis_LRE = ['2', '5', '5', '2', '5', '5']
+        expected_thesis_LCR = ['B', 'С', 'С', 'В', 'С', 'С', 'С']
+        expected_thesis_LRE = ['2', '5', '5', '2', '5', '5', '5']
 
         self.assertEqual(len(res), expected_thesis_count)
         for index in range(0, len(res)):
