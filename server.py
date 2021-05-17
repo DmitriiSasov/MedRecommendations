@@ -13,16 +13,14 @@ db_updater = DatabaseUpdater()
 
 
 def db_update():
-    day_of_week = time.strftime("%A", time.localtime(time.time()))
     current_hour = time.strftime("%H", time.localtime(time.time()))
     is_service_available = db_updater.update_recommendations()
 
-    if day_of_week == "Saturday" and (current_hour == "23"):
-
+    if current_hour == "23":
         if is_service_available is False:
             scheduler.add_job(db_update_2, 'date', run_date=datetime.datetime.now()+datetime.timedelta(hours=1))
         else:
-            print("Job is done!")
+            db_updater.update_recommendations()
 
 
 def db_update_2():
@@ -31,7 +29,7 @@ def db_update_2():
     if is_service_available is False:
         scheduler.add_job(db_update_2, 'date', run_date=datetime.datetime.now() + datetime.timedelta(hours=1))
     else:
-        print("Job is done!")
+        db_updater.update_recommendations()
 
 
 scheduler.add_job(db_update, 'interval', hours=1)
