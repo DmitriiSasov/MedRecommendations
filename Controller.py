@@ -1,12 +1,12 @@
 import os
 
-from create_pdf import make_pdf
+from create_pdf import DocGenerator
 from threading import Timer
 
 
 class RecommendationController:
 
-    doc_generator = None
+    doc_generator = DocGenerator()
 
     # Удаляем файл
     # path - строка - путь к файлу, который надо удалить
@@ -19,3 +19,5 @@ class RecommendationController:
         url = 'static/' + doc_name
         timer = Timer(600, self.__remove_file, args=['static/' + doc_name])
         timer.start()
+
+        return url

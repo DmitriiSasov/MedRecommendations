@@ -1,4 +1,3 @@
-
 class Recommendation:
 
     nozology_name = ""
@@ -16,15 +15,12 @@ class Recommendation:
 
     table_tag = ""
 
+    publication_date = ""
+
 
 class Thesis:
 
-    #Текст тезиса
-    text = ""
-
-    #УУР (A-C)
-    LCR = ""
-
-    #УДД (1-5)
-    LRE = ""
-
+    def __init__(self, text: str, LCR: str, LRE: str):
+        self.LRE = LRE
+        self.LCR = LCR
+        self.text = text
