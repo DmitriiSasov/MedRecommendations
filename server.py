@@ -43,7 +43,7 @@ class Router:
     @staticmethod
     @app.route('/', methods=['GET'])
     def home_page():
-        return render_template('index.php')
+        return render_template('index.html')
 
     # Создаем документ и отображаем его на странице
     @staticmethod
@@ -52,6 +52,9 @@ class Router:
         search_req = request.form['search_req']
         mkbs = search_req.split("+")
         url = Router.recommendation_controller.generate_recommendation(mkbs)
+
+        if url is False:
+            return render_template('error.html')
 
         return render_template('pdf.html', url=url)
 

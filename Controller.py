@@ -16,6 +16,9 @@ class RecommendationController:
     def generate_recommendation(self, mkbs: list):
         doc_name = self.doc_generator.make_pdf(mkbs)
 
+        if doc_name is False:
+            return False
+
         url = 'static/' + doc_name
         timer = Timer(600, self.__remove_file, args=['static/' + doc_name])
         timer.start()

@@ -127,10 +127,9 @@ def get_recommendation_id_by_mkb(cur, mkb):
             dates.append(date)
         last_rec_date = greater_date(dates)
         recommendation_id = get_recommendation_id_by_creation_date(cur, last_rec_date)
+    elif len(row) == 0:
+        return False
     else:
-        if row is None:
-            return False
-
         for el in row:
             recommendation_id = "{0}".format(el[0])
 
