@@ -1,6 +1,9 @@
 import requests
 import json
 
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.date import DateTrigger
+
 from data_structures import Recommendation
 from recommendation_seeker import RecommendationSeeker
 from db import insert_recommendation_into_db
@@ -50,23 +53,24 @@ class DatabaseUpdater:
         return self.db_updating
 
     def first_db_filling(self):
-        self.scheduler.add_job(self.db_update, 'date',
-                               run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
+        date_trigger = DateTrigger(run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
+        self.scheduler.add_job(self.db_update, date_trigger)
 
     def scheduler_func(self):
-        self.scheduler.add_job(self.db_update, 'cron', hour='23')
+        cron_trigger = CronTrigger(hour='23')
+        self.scheduler.add_job(self.db_update, cron_trigger)
 
     def db_update(self):
         if self.is_recommendation_service_available() is False:
-            self.scheduler.add_job(self.db_update_2, 'date',
-                                   run_date=datetime.datetime.now() + datetime.timedelta(hours=1))
+            date_trigger = DateTrigger(run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
+            self.scheduler.add_job(self.db_update_2, date_trigger)
         else:
             self.updating_process()
 
     def db_update_2(self):
         if self.is_recommendation_service_available() is False:
-            self.scheduler.add_job(self.db_update_2, 'date',
-                                   run_date=datetime.datetime.now() + datetime.timedelta(hours=1))
+            date_trigger = DateTrigger(run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
+            self.scheduler.add_job(self.db_update_2, date_trigger)
         else:
             self.updating_process()
 
