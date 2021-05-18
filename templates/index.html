@@ -17,9 +17,7 @@
             <input type="text" name="search_req" class="input" id="input_codes" placeholder="Введите коды МКБ-10"/>
             {% if error_message %}
                 <p>Ошибка создания документа.</p>
-                <p>Возможно, один или несколько кодов МКБ-10 введены неверно.<br>
-                    Пожалуйста, проверьте правильность написания кодов и попробуйте еще раз.
-                </p>
+                <p>{{error_message}}</p>
             {% endif %}
             <button class="search_button">Сформировать документ</button>
         </form>
