@@ -54,7 +54,7 @@ class DatabaseUpdater:
                                run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
 
     def scheduler_func(self):
-        self.scheduler.add_job(self.db_update, 'cron', day_of_week='tue', hour='19', minute='15')
+        self.scheduler.add_job(self.db_update, 'cron', hour='23')
 
     def db_update(self):
         if self.is_recommendation_service_available() is False:
