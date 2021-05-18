@@ -5,13 +5,13 @@ from data_structures import Recommendation, Thesis
 import dateutil.parser
 
 DB_HOST = 'localhost'
-DB_NAME = 'mydb'
+DB_NAME = 'clin_rec_db'
 DB_USER = 'root'
 DB_PASS = 'SlenderHospice123'
 
 
 def is_rec_not_exist(cur, nozology_name, date):
-    cur.execute("SELECT `id` FROM `recommendation` WHERE `name`=%s AND `publication_date`=%s", (nozology_name, date))
+    cur.execute("SELECT `id` FROM `recommendation` WHERE `name`=%s AND `creation_date`=%s", (nozology_name, date))
 
     row = cur.fetchone()
 
