@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клинические рекомендации</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/script.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Клинические рекомендации</h1>
+        </div>
+        <form class="main" action="/search" method="post">
+            <h2>Коды МКБ-10</h2>
+            <input type="text" name="search_req" class="input" id="input_codes" placeholder="Введите коды МКБ-10"/>
+            <button class="search_button">Сформировать документ</button>
+        </form>
+    </div>
+    <div class="loader_window loader_js">
+        <h3>Выполняется создание документа. Пожалуйста, подождите...</h3>
+        <div class="loader_circle"></div>
+    </div>
+    <div class="overlay overlay_js"></div>
+</body>
+</html>

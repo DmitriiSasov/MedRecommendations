@@ -2,12 +2,15 @@
 <html lang="en" dir="ltr">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="/static/js/script.js"></script>
 </head>
-<body data-gr-c-s-loaded="true" style="height: 100vh; padding: 0; margin: 0">
-    <object data='{{ url }}'
-        type='application/pdf'
-        width='100%'
-        height='100%'>
-    </object>
+<body data-gr-c-s-loaded="true">
+    <div class="container">
+        <object class="pdf_window" data='{{ url }}'
+            type='application/pdf'>
+        </object>
+    </div>
 </body>
 </html>
