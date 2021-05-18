@@ -3,11 +3,21 @@
 import pymysql
 from data_structures import Recommendation, Thesis
 import dateutil.parser
+import re
 
-DB_HOST = 'localhost'
-DB_NAME = 'clin_rec_db'
-DB_USER = 'root'
-DB_PASS = 'SlenderHospice123'
+CONFIG_REGEX = ':\s+([^\n]+[^\s]+)'
+
+with open("db_config.txt", "r") as file:
+    values = []
+    for line in file:
+        if line.__contains__(':'):
+            result = re.search(CONFIG_REGEX, line)
+            values.append(result.group(1))
+
+DB_HOST = values[0]
+DB_NAME = values[1]
+DB_USER = values[2]
+DB_PASS = values[3]
 
 
 def is_rec_not_exist(cur, nozology_name, date):
