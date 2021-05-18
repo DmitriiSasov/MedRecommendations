@@ -48,14 +48,23 @@ h3 {
     margin: 0;
 }
 
+p {
+    margin: 10px 0 0;
+    color: #fb9a3b;
+    text-shadow: 1px 1px 0 black;
+}
+
 .header {
     background-color: #2359a5;
     width: 100%;
-    height: 90px;
+    height: 9%;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding-left: 30px;
+    padding-right: 30px;
     box-shadow: 1px 0 5px black;
+    z-index: 1;
 }
 
 .main {
@@ -158,10 +167,29 @@ h3 {
 }
 
 .pdf_window {
-    height: 100%;
+    height: 91%;
     width: 100%;
 }
 
+.home_btn {
+    height: 55px;
+    width: 55px;
+    border-radius: 15px;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.home_btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.home_icon {
+    height: 40px;
+    width: 40px;
+}
 
 @keyframes atw {
     0% {
