@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['server.py'],
-             pathex=['C:\\Users\\danil\\PycharmProjects\\ClinicalRecommendations'],
+             pathex=['C:\\Users\\danil\\Desktop\\Диплом\\ClinRecLast\\MedRecommendations'],
              binaries=[],
-             datas=[],
+             datas=[('templates', 'templates'), ('static', 'static'), ('fonts', 'fonts'), ('wkhtmltopdf', 'wkhtmltopdf')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
