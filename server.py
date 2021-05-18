@@ -40,5 +40,6 @@ class Router:
 
 
 if __name__ == '__main__':
+    db_updater.first_db_filling()
     db_updater.scheduler_func()
     app.run(port=8880)

@@ -5,7 +5,6 @@ from data_structures import Recommendation
 from recommendation_seeker import RecommendationSeeker
 from db import insert_recommendation_into_db
 from apscheduler.schedulers.background import BackgroundScheduler
-import time
 import datetime
 
 
@@ -19,6 +18,7 @@ class DatabaseUpdater:
     db_updating = False
 
     scheduler = BackgroundScheduler(daemon=True)
+    scheduler.start()
 
     def __init__(self):
         self.recommendation_response = requests.get(self.RECOMMENDATION_LIST_URL)
@@ -49,23 +49,21 @@ class DatabaseUpdater:
     def is_db_updating(self):
         return self.db_updating
 
-    def scheduler_func(self):
-        self.scheduler.start()
+    def first_db_filling(self):
+        self.scheduler.add_job(self.db_update, 'date',
+                               run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
 
+    def scheduler_func(self):
         self.scheduler.add_job(self.db_update, 'cron', day_of_week='tue', hour='19', minute='15')
 
     def db_update(self):
-        current_hour = time.strftime("%H", time.localtime(time.time()))
-
-        if current_hour == "19":
-            if self.is_recommendation_service_available() is False:
-                self.scheduler.add_job(self.db_update_2, 'date',
-                                       run_date=datetime.datetime.now() + datetime.timedelta(hours=1))
-            else:
-                self.updating_process()
+        if self.is_recommendation_service_available() is False:
+            self.scheduler.add_job(self.db_update_2, 'date',
+                                   run_date=datetime.datetime.now() + datetime.timedelta(hours=1))
+        else:
+            self.updating_process()
 
     def db_update_2(self):
-
         if self.is_recommendation_service_available() is False:
             self.scheduler.add_job(self.db_update_2, 'date',
                                    run_date=datetime.datetime.now() + datetime.timedelta(hours=1))
