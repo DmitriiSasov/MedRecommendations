@@ -56,7 +56,8 @@ def insert_recommendation_into_db(recommendation):
 
 def insert_rec_info_into_db(cur, name, table, creation_date):
     sql = "INSERT INTO `recommendation` (`name`, `table`, `creation_date`) VALUES (%s, %s, %s)"
-    cur.execute(sql, (name, table, creation_date))
+    creation_date_dt = dateutil.parser.parse(creation_date)
+    cur.execute(sql, (name, table, creation_date_dt))
 
 
 def insert_mkbs_into_db(cur, mkbs, rec_id):
