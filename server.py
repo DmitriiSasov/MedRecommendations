@@ -16,6 +16,8 @@ class Router:
                         'попробуйте еще раз.'
     DB_UPDATING_ERROR_MESSAGE = 'В данный момент происходит обновление базы данных.'
 
+    SERVER_ERROR = 'Непредвиденная ошибка на сервере. Попробуйте поискать рекомендации позже.'
+
     # Отображаем домашнюю страницу
     @staticmethod
     @app.route('/', methods=['GET'])
@@ -28,10 +30,13 @@ class Router:
     def make_recommendation():
         if db_updater.is_db_updating():
             return render_template('index.html', error_message=Router.DB_UPDATING_ERROR_MESSAGE)
-
         search_req = request.form['search_req']
-        mkbs = search_req.split("+")
-        url = Router.recommendation_controller.generate_recommendation(mkbs)
+        try:
+            mkbs = search_req.split("+")
+            url = Router.recommendation_controller.generate_recommendation(mkbs)
+        except Exception:
+            print(search_req + ' При таком запросе возникла ошибка!')
+            return render_template('index.html', error_message=Router.SERVER_ERROR)
 
         if url is False:
             return render_template('index.html', error_message=Router.MKB_ERROR_MESSAGE)
@@ -40,6 +45,6 @@ class Router:
 
 
 if __name__ == '__main__':
-    db_updater.first_db_filling()
+    #db_updater.first_db_filling()
     db_updater.scheduler_func()
     app.run(port=8880)
