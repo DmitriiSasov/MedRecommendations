@@ -14,7 +14,7 @@ import datetime
 class DatabaseUpdater:
     recommendation_response = None
 
-    RECOMMENDATION_LIST_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetJsonClinrecs&ssid=undefined'
+    RECOMMENDATION_LIST_URL = 'https://apicr.minzdrav.gov.ru/api.ashx?op=GetJsonClinrecs&ssid=undefined'
 
     recommendation_seeker = RecommendationSeeker()
 

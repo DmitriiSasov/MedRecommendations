@@ -11,7 +11,7 @@ from data_structures import Thesis
 
 
 class RecommendationSeeker:
-    RECOMMENDATION_URL = 'https://democenter.nitrosbase.com/clinrecalg5/API.ashx?op=GetClinrec2&id=__ID&ssid=undefined'
+    RECOMMENDATION_URL = 'https://apicr.minzdrav.gov.ru/api.ashx?op=GetClinrec2&id=__ID&ssid=undefined'
 
     GLOBAL_DOCUMENT_SECTIONS = ['2. Диагностика', '3. Лечение']
     DIAGNOSIS_SECTIONS = ['Физикальное обследование', 'Лабораторные диагностические исследования',
