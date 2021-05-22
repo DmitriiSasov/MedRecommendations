@@ -1,0 +1,7 @@
+HOST: localhost
+DB_NAME: clin_rec_db
+USER: root
+PASSWORD: 1234
+
+USER: clinRecConnector
+PASSWORD: jsuwHV$nak!s14
