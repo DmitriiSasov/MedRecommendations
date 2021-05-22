@@ -31,6 +31,7 @@ class Router:
         if db_updater.is_db_updating():
             return render_template('index.html', error_message=Router.DB_UPDATING_ERROR_MESSAGE)
         search_req = request.form['search_req']
+        search_req = search_req.upper()
         try:
             mkbs = search_req.split("+")
             url = Router.recommendation_controller.generate_recommendation(mkbs)
