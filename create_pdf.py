@@ -22,20 +22,20 @@ from db import get_recommendation_from_db
 
 class DocGenerator:
 
+    # Создание раздела содержания в документе
+    # pdf - текущее состояние документа
+    def make_table_of_content(self, pdf):
+        pdf.add_page()
+        pdf.set_font('timesbd', size=22)
+        pdf.cell(200, 10, txt='Оглавление', ln=1)
+        pdf.set_font('times', size=18)
+        pdf.cell(200, 10, txt='• 1 Диагностика', ln=1)
+        pdf.cell(200, 10, txt='• 2 Лечение', ln=1)
+        pdf.cell(200, 10, txt='• Критерии оценки качества медицинской помощи', ln=1)
+
     # Создание PDF-файла на основе переданных рекомендаций
     # recommendations - список рекомендаций
     def make_pdf(self, mkbs):
-        pdf = FPDF(orientation='P', unit='mm', format='A4')
-
-        pdf.add_font('times', '', 'fonts/times.ttf', uni=True)
-        pdf.add_font('timesbd', '', 'fonts/timesbd.ttf', uni=True)
-        pdf.add_font('timesi', '', 'fonts/timesi.ttf', uni=True)
-
-        pdf.add_page()
-        pdf.set_font('timesbd', size=22)
-        pdf.cell(200, 40, txt='Клинические рекомендации', ln=1, align='C')
-        pdf.set_font('timesbd', size=18)
-        pdf.ln(30)
 
         not_exist = False
         for mkb in mkbs:
@@ -49,7 +49,19 @@ class DocGenerator:
         recommendations = []
         for mkb in mkbs:
             recommendation = get_recommendation_from_db(mkb)
-            recommendations.append(get_recommendation_from_db(mkb))
+            recommendations.append(recommendation)
+
+        pdf = FPDF(orientation='P', unit='mm', format='A4')
+
+        pdf.add_font('times', '', 'fonts/times.ttf', uni=True)
+        pdf.add_font('timesbd', '', 'fonts/timesbd.ttf', uni=True)
+        pdf.add_font('timesi', '', 'fonts/timesi.ttf', uni=True)
+
+        pdf.add_page()
+        pdf.set_font('timesbd', size=22)
+        pdf.cell(200, 40, txt='Клинические рекомендации', ln=1, align='C')
+        pdf.set_font('timesbd', size=18)
+        pdf.ln(30)
 
         mkbs = get_mkbs(recommendations)
         nosologies = get_nosologies(recommendations)
@@ -65,13 +77,7 @@ class DocGenerator:
             pdf.ln(3)
             mkb = ''
 
-        pdf.add_page()
-        pdf.set_font('timesbd', size=22)
-        pdf.cell(200, 10, txt='Оглавление', ln=1)
-        pdf.set_font('times', size=18)
-        pdf.cell(200, 10, txt='• 1 Диагностика', ln=1)
-        pdf.cell(200, 10, txt='• 2 Лечение', ln=1)
-        pdf.cell(200, 10, txt='• Критерии оценки качества медицинской помощи', ln=1)
+        self.make_table_of_content(pdf)
 
         pdf.add_page()
 
