@@ -1,6 +1,6 @@
 import unittest
-from sort_document import get_mkbs, get_criterias, get_nosologies, lcr_replace, lre_replace, sort, \
-    combine_recommendations, sort_treatment_theses, sort_diagnostic_theses
+
+from create_pdf import DocGenerator
 from data_structures import Recommendation, Thesis
 
 recommendation1 = Recommendation()
@@ -333,12 +333,14 @@ def make_treatment_theses_for_sort_test():
     return expected_treatment_theses
 
 
-class TestSortDocument(unittest.TestCase):
+class TestDocGenerator(unittest.TestCase):
+
+    doc_generator = DocGenerator()
 
     # Получение кодов МКБ-10 из пустого списка рекомендаций
     def test_get_mkbs_empty(self):
         expected_mkbs = []
-        actual_mkbs = get_mkbs(recommendations_empty)
+        actual_mkbs = self.doc_generator.get_mkbs(recommendations_empty)
 
         self.assertEqual(expected_mkbs, actual_mkbs)
 
@@ -346,7 +348,7 @@ class TestSortDocument(unittest.TestCase):
     # и один код МКБ-10
     def test_get_mkbs_one_nosology_one_mkb(self):
         expected_mkbs = [['H80']]
-        actual_mkbs = get_mkbs(recommendations1)
+        actual_mkbs = self.doc_generator.get_mkbs(recommendations1)
 
         self.assertEqual(expected_mkbs, actual_mkbs)
 
@@ -354,7 +356,7 @@ class TestSortDocument(unittest.TestCase):
     # и несколько кодов МКБ-10
     def test_get_mkbs_one_nosology_few_mkbs(self):
         expected_mkbs = [['I10', 'I11', 'I12', 'I13']]
-        actual_mkbs = get_mkbs(recommendations2)
+        actual_mkbs = self.doc_generator.get_mkbs(recommendations2)
 
         self.assertEqual(expected_mkbs, actual_mkbs)
 
@@ -362,42 +364,42 @@ class TestSortDocument(unittest.TestCase):
     # и несколько кодов МКБ-10
     def test_get_mkbs_few_nosology_few_mkbs(self):
         expected_mkbs = [['H80'], ['I10', 'I11', 'I12', 'I13'], ['H25.1', 'H25.2', 'H25.3']]
-        actual_mkbs = get_mkbs(recommendations3)
+        actual_mkbs = self.doc_generator.get_mkbs(recommendations3)
 
         self.assertEqual(expected_mkbs, actual_mkbs)
 
     # Получение таблицы критериев из пустого списка рекомендаций
     def test_get_criterias_empty(self):
         expected_criterias = []
-        actual_criterias = get_criterias(recommendations_empty)
+        actual_criterias = self.doc_generator.get_criterias(recommendations_empty)
 
         self.assertEqual(expected_criterias, actual_criterias)
 
     # Получение таблицы критериев из списка рекомендаций, где только одна рекомендация (соответственно одна таблица)
     def test_get_criterias_one_criteria(self):
         expected_criterias = ['first criteria']
-        actual_criterias = get_criterias(recommendations1)
+        actual_criterias = self.doc_generator.get_criterias(recommendations1)
 
         self.assertEqual(expected_criterias, actual_criterias)
 
     # Получение таблицы критериев из списка рекомендаций, где несколько рекомендаций (соответственно несколько таблиц)
     def test_get_criterias_few_criterias(self):
         expected_criterias = ['first criteria', 'second criteria', 'third criteria']
-        actual_criterias = get_criterias(recommendations3)
+        actual_criterias = self.doc_generator.get_criterias(recommendations3)
 
         self.assertEqual(expected_criterias, actual_criterias)
 
     # Получение названий нозологий из списка рекомендаций, где только одна рекомендация (соответственно одно название)
     def test_get_nosologies_empty(self):
         expected_nosologies = []
-        actual_nosologies = get_nosologies(recommendations_empty)
+        actual_nosologies = self.doc_generator.get_nosologies(recommendations_empty)
 
         self.assertEqual(expected_nosologies, actual_nosologies)
 
     # Получение названий нозологий из списка рекомендаций, где только одна рекомендация (соответственно одно название)
     def test_get_nosologies_one_nosology(self):
         expected_nosologies = ['first nosology']
-        actual_nosologies = get_nosologies(recommendations1)
+        actual_nosologies = self.doc_generator.get_nosologies(recommendations1)
 
         self.assertEqual(expected_nosologies, actual_nosologies)
 
@@ -405,70 +407,70 @@ class TestSortDocument(unittest.TestCase):
     # (соответственно несколько названий)
     def test_get_nosologies_few_nosology(self):
         expected_nosologies = ['first nosology', 'second nosology', 'third nosology']
-        actual_nosologies = get_nosologies(recommendations3)
+        actual_nosologies = self.doc_generator.get_nosologies(recommendations3)
 
         self.assertEqual(expected_nosologies, actual_nosologies)
 
     # Проверка на пустой строке
     def test_lcr_replace_empty(self):
         expected_lcr = ''
-        actual_lcr = lcr_replace('')
+        actual_lcr = self.doc_generator.lcr_replace('')
 
         self.assertEqual(expected_lcr, actual_lcr)
 
     # Замена написанной на кириллице буквы А на ее латинский аналог
     def test_lcr_replace_cyrillic(self):
         expected_lcr = 'A'
-        actual_lcr = lcr_replace(diagnostic_thesis1_rec1.LCR)
+        actual_lcr = self.doc_generator.lcr_replace(diagnostic_thesis1_rec1.LCR)
 
         self.assertEqual(expected_lcr, actual_lcr)
 
     # В данном случае замены не происходит, так как буква A изначально написана на латинице
     def test_lcr_replace_latin(self):
         expected_lcr = 'A'
-        actual_lcr = lcr_replace(diagnostic_thesis1_rec1.LCR)
+        actual_lcr = self.doc_generator.lcr_replace(diagnostic_thesis1_rec1.LCR)
 
         self.assertEqual(expected_lcr, actual_lcr)
 
     # Проверка на пустой строке
     def test_lre_replace_empty(self):
         expected_lre = ''
-        actual_lre = lre_replace('')
+        actual_lre = self.doc_generator.lre_replace('')
 
         self.assertEqual(expected_lre, actual_lre)
 
     # Замена римской цифры I на ее арабский аналог - 1
     def test_lre_replace_I(self):
         expected_lre = '1'
-        actual_lre = lre_replace(diagnostic_thesis1_rec1.LRE)
+        actual_lre = self.doc_generator.lre_replace(diagnostic_thesis1_rec1.LRE)
 
         self.assertEqual(expected_lre, actual_lre)
 
     # Замена римской цифры II на ее арабский аналог - 2
     def test_lre_replace_II(self):
         expected_lre = '2'
-        actual_lre = lre_replace(diagnostic_thesis1_rec2.LRE)
+        actual_lre = self.doc_generator.lre_replace(diagnostic_thesis1_rec2.LRE)
 
         self.assertEqual(expected_lre, actual_lre)
 
     # Замена римской цифры III на ее арабский аналог - 3
     def test_lre_replace_III(self):
         expected_lre = '3'
-        actual_lre = lre_replace(diagnostic_thesis2_rec2.LRE)
+        actual_lre = self.doc_generator.lre_replace(diagnostic_thesis2_rec2.LRE)
 
         self.assertEqual(expected_lre, actual_lre)
 
     # Замена римской цифры IV на ее арабский аналог - 4
     def test_lre_replace_IV(self):
         expected_lre = '4'
-        actual_lre = lre_replace(diagnostic_thesis4_rec2.LRE)
+        actual_lre = self.doc_generator.lre_replace(diagnostic_thesis4_rec2.LRE)
 
         self.assertEqual(expected_lre, actual_lre)
 
     # Замена римской цифры V на ее арабский аналог - 5
     def test_lre_replace_V(self):
         expected_lre = '5'
-        actual_lre = lre_replace(diagnostic_thesis3_rec2.LRE)
+        actual_lre = self.doc_generator.lre_replace(diagnostic_thesis3_rec2.LRE)
 
         self.assertEqual(expected_lre, actual_lre)
 
@@ -477,7 +479,7 @@ class TestSortDocument(unittest.TestCase):
 
         expected_diagnostic_theses = make_diagnostic_theses_for_combine_test()
 
-        actual_recommendation = combine_recommendations(recommendations3)
+        actual_recommendation = self.doc_generator.combine_recommendations(recommendations3)
 
         for key in expected_diagnostic_theses:
             i = 0
@@ -490,7 +492,7 @@ class TestSortDocument(unittest.TestCase):
 
         expected_treatment_theses = make_treatment_theses_for_combine_test()
 
-        actual_recommendation = combine_recommendations(recommendations3)
+        actual_recommendation = self.doc_generator.combine_recommendations(recommendations3)
 
         i = 0
         for thesis in expected_treatment_theses:
@@ -502,8 +504,8 @@ class TestSortDocument(unittest.TestCase):
 
         expected_diagnostic_theses = make_diagnostic_theses_for_sort_test()
 
-        recommendation = combine_recommendations(recommendations3)
-        actual_diagnostic_theses = sort_diagnostic_theses(recommendation[0])
+        recommendation = self.doc_generator.combine_recommendations(recommendations3)
+        actual_diagnostic_theses = self.doc_generator.sort_diagnostic_theses(recommendation[0])
 
         for key in expected_diagnostic_theses:
             i = 0
@@ -516,8 +518,8 @@ class TestSortDocument(unittest.TestCase):
 
         expected_treatment_theses = make_treatment_theses_for_sort_test()
 
-        recommendation = combine_recommendations(recommendations3)
-        actual_treatment_theses = sort_treatment_theses(recommendation[1])
+        recommendation = self.doc_generator.combine_recommendations(recommendations3)
+        actual_treatment_theses = self.doc_generator.sort_treatment_theses(recommendation[1])
 
         i = 0
         for thesis in expected_treatment_theses:
