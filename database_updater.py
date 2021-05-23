@@ -56,7 +56,7 @@ class DatabaseUpdater:
         date_trigger = DateTrigger(run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
         self.scheduler.add_job(self.db_update, date_trigger)
 
-    def scheduler_func(self):
+    def schedule_next_update(self):
         cron_trigger = CronTrigger(hour='23')
         self.scheduler.add_job(self.db_update, cron_trigger)
 
