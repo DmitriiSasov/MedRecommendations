@@ -13,5 +13,5 @@ class TestParser(unittest.TestCase):
         self.assertTrue(self.updater.is_recommendation_service_available())
 
     def test_update_recommendations(self):
-        self.updater.update_recommendations()
+        self.assertTrue(self.updater.update_recommendations() is not False)
 
