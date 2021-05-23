@@ -20,7 +20,7 @@ class DatabaseUpdater:
 
     db_updating = False
 
-    scheduler = BackgroundScheduler(daemon=True)
+    scheduler = BackgroundScheduler(daemon=True, job_defaults={'misfire_grace_time': 10})
     scheduler.start()
 
     def __init__(self):
@@ -79,4 +79,5 @@ class DatabaseUpdater:
         self.db_updating = True
         self.update_recommendations()
         self.db_updating = False
-        print("Database updated!")
+        current_datetime = datetime.datetime.now()
+        print(f"Database updated at {current_datetime.strftime('%d.%m.%Y %H:%M:%S')}!")
