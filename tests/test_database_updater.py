@@ -2,8 +2,8 @@ import unittest
 
 import database_updater
 
-class TestParser(unittest.TestCase):
 
+class TestParser(unittest.TestCase):
     updater = None
 
     def setUp(self):
@@ -14,4 +14,3 @@ class TestParser(unittest.TestCase):
 
     def test_update_recommendations(self):
         self.assertTrue(self.updater.update_recommendations() is not False)
-
