@@ -63,14 +63,7 @@ class DatabaseUpdater:
     def db_update(self):
         if self.is_recommendation_service_available() is False:
             date_trigger = DateTrigger(run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
-            self.scheduler.add_job(self.db_update_2, date_trigger)
-        else:
-            self.updating_process()
-
-    def db_update_2(self):
-        if self.is_recommendation_service_available() is False:
-            date_trigger = DateTrigger(run_date=datetime.datetime.now() + datetime.timedelta(seconds=5))
-            self.scheduler.add_job(self.db_update_2, date_trigger)
+            self.scheduler.add_job(self.db_update, date_trigger)
         else:
             self.updating_process()
 
