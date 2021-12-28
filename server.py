@@ -2,6 +2,8 @@ from flask import Flask, request, render_template, redirect, url_for, make_respo
 from Controller import RecommendationController
 from database_updater import DatabaseUpdater
 
+import sys
+
 app = Flask(__name__, static_folder="static")
 
 db_updater = DatabaseUpdater()
@@ -46,6 +48,8 @@ class Router:
 
 
 if __name__ == '__main__':
-    db_updater.first_db_filling()
+    if len(sys.argv) > 1:
+        if sys.argv[1].__eq__("--fill"):
+            db_updater.first_db_filling()
     db_updater.schedule_next_update()
     app.run(port=8880)
