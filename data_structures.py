@@ -1,4 +1,6 @@
 class Recommendation:
+    _id = ""
+
     nozology_name = ""
 
     # Все коды МКБ-10 из нозологии в виде строк
@@ -18,6 +20,7 @@ class Recommendation:
     publication_date = ""
 
     def __init__(self, nozology_name, MKBs, diagnosticTheses, treatmentTheses, table_tag, publication_date):
+        self._id = nozology_name + MKBs
         self.nozology_name = nozology_name
         self.MKBs = MKBs
         self.diagnosticTheses = diagnosticTheses
