@@ -6,7 +6,7 @@ from apscheduler.triggers.date import DateTrigger
 
 from data_structures import Recommendation
 from recommendation_seeker import RecommendationSeeker
-from db import insert_recommendation_into_db
+from db import insert_recommendation_into_db, insert_recommendations_if_not_exist
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 
@@ -32,9 +32,6 @@ class DatabaseUpdater:
             return False
         return True
 
-    def save_recommendation(self, recommendation: Recommendation):
-        insert_recommendation_into_db(recommendation)
-
     def update_recommendations(self):
         self.db_updating = True
         if not self.is_recommendation_service_available():
@@ -42,12 +39,11 @@ class DatabaseUpdater:
 
         count = 0
         recommendations = json.loads(self.recommendation_response.text)
+        parsed_recommendations = []
         for recommendation in recommendations:
-            self.save_recommendation(self.recommendation_seeker.find_recommendation(recommendation['id']))
-            if count == len(recommendations):
-                self.db_updating = False
-
-            count += 1
+            parsed_recommendations.append(self.recommendation_seeker.find_recommendation(recommendation['id']))
+        insert_recommendations_if_not_exist(parsed_recommendations)
+        self.db_updating = False
 
     def is_db_updating(self):
         return self.db_updating
