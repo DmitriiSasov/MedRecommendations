@@ -17,6 +17,14 @@ class Recommendation:
 
     publication_date = ""
 
+    def __init__(self, nozology_name, MKBs, diagnosticTheses, treatmentTheses, table_tag, publication_date):
+        self.nozology_name = nozology_name
+        self.MKBs = MKBs
+        self.diagnosticTheses = diagnosticTheses
+        self.treatmentTheses = treatmentTheses
+        self.table_tag = table_tag
+        self.publication_date = publication_date
+
 
 class Thesis:
 
