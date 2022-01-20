@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
+import pymongo
+
 from connection_provider import ConnectionProvider
 from data_structures import Recommendation
 
@@ -20,9 +24,13 @@ class DB:
                 connection.get_collection().insert_one(recommendation.serialize())
 
     def get_recommendation_from_db(self, nozology_name):
+        recommendation = None
         with self.connection_provider.create_connection() as connection:
-            recommendation = Recommendation.from_json(connection.get_collection().find_one(
-                {'nozology_name': nozology_name}))
+            res = connection.get_collection().find({'nozology_name': nozology_name})\
+                .sort('publication_date', pymongo.DESCENDING).limit(1)
+            res = list(res)
+            if len(res) > 0:
+                recommendation = Recommendation.from_json(res[0])
         if recommendation is None:
             return False
         return recommendation

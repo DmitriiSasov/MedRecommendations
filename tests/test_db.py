@@ -73,7 +73,22 @@ class TestDb(unittest.TestCase):
                                                                   datetime(2020, 12, 21, 5, 3, 2, 5)).serialize())
         res = self.db.get_recommendation_from_db('n2')
         self.assertEquals(Recommendation('n2', ['c1', 'c2'], {'g1': [Thesis('1', '2', '3')]}, [Thesis('1', '2', '3')],
-                                        'tag1', datetime(2020, 12, 21, 5, 3, 2)), res)
+                                         'tag1', datetime(2020, 12, 21, 5, 3, 2)), res)
+
+    def test_get_recommendation_from_db__from_not_empty_db_last_recomendation(self):
+        test_date = datetime(2021, 12, 21, 5, 3, 2, 0)
+        with MongoConnectionForTest() as connection:
+            connection.get_collection().insert_many([Recommendation('n2', ['c1', 'c2'], {'g1': [Thesis('1', '2', '3')]},
+                                                                    [Thesis('1', '2', '3')], 'tag1',
+                                                                    datetime(2020, 12, 21, 5, 3, 2, 5)).serialize(),
+                                                     Recommendation('n2', ['c1', 'c2'],
+                                                                    {'g1': [Thesis('1', '1', '1')]},
+                                                                    [Thesis('1', '1', '1')], 'tag2',
+                                                                    test_date).serialize()
+                                                     ])
+        res = self.db.get_recommendation_from_db('n2')
+        self.assertEquals(Recommendation('n2', ['c1', 'c2'], {'g1': [Thesis('1', '1', '1')]}, [Thesis('1', '1', '1')],
+                                         'tag2', test_date), res)
 
     def test_get_recommendation_from_db__from_empty_db(self):
         res = self.db.get_recommendation_from_db('n2')
