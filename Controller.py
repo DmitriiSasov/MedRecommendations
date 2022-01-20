@@ -13,8 +13,8 @@ class RecommendationController:
     def __remove_file(self, path):  # path
         os.remove(path)
 
-    def generate_recommendation(self, mkbs: list):
-        doc_name = self.doc_generator.make_pdf(mkbs)
+    def generate_recommendation(self, nozology_names: list):
+        doc_name = self.doc_generator.make_pdf(nozology_names)
 
         if doc_name is False:
             return False

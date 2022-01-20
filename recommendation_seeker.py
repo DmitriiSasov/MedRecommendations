@@ -33,13 +33,12 @@ class RecommendationSeeker:
         if recommendation_content.status_code != 200:
             return False
         self.__recommendation_content_json = json.loads(recommendation_content.text)
-        recommendation = Recommendation()
-        recommendation.MKBs = self.__find_mkbs()
-        recommendation.nozology_name = self.__recommendation_content_json['name']
-        recommendation.table_tag = self.__find_criteria()
-        recommendation.diagnosticTheses = self.__find_diagnosis_theses()
-        recommendation.treatmentTheses = self.__find_treatment_theses()
-        recommendation.creation_date = self.__find_creation_date()
+        recommendation = Recommendation(self.__recommendation_content_json['name'],
+                                        self.__find_mkbs(),
+                                        self.__find_diagnosis_theses(),
+                                        self.__find_treatment_theses(),
+                                        self.__find_criteria(),
+                                        self.__find_creation_date())
         return recommendation
 
     def __find_creation_date(self):

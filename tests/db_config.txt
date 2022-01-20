@@ -1,7 +1,1 @@
-HOST: localhost
-DB_NAME: clin_rec_db
-USER: root
-PASSWORD: 1234
-
-USER: clinRecConnector
-PASSWORD: jsuwHV$nak!s14
+CONNECTION_MONGO: mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false

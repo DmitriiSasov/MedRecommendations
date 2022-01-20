@@ -4,12 +4,16 @@ from fpdf import FPDF
 from pdfrw import PdfReader, PdfWriter
 import datetime
 import pdfkit
-from db import get_recommendation_from_db
+
+from connection_provider import ConnectionProvider
+from db import DB
 from operator import attrgetter
 import re
 
 
 class DocGenerator:
+
+    db = DB(ConnectionProvider())
 
     # Создание раздела содержания в документе
     # pdf - текущее состояние документа
@@ -24,11 +28,11 @@ class DocGenerator:
 
     # Создание PDF-файла на основе переданных рекомендаций
     # recommendations - список рекомендаций
-    def make_pdf(self, mkbs):
+    def make_pdf(self, nozology_names):
 
         not_exist = False
-        for mkb in mkbs:
-            rec = get_recommendation_from_db(mkb)
+        for nozology_name in nozology_names:
+            rec = self.db.get_recommendation_from_db(nozology_name)
             if rec is False:
                 not_exist = True
 
@@ -36,8 +40,8 @@ class DocGenerator:
             return False
 
         recommendations = []
-        for mkb in mkbs:
-            recommendation = get_recommendation_from_db(mkb)
+        for nozology_name in nozology_names:
+            recommendation = self.db.get_recommendation_from_db(nozology_name)
             recommendations.append(recommendation)
 
         pdf = FPDF(orientation='P', unit='mm', format='A4')

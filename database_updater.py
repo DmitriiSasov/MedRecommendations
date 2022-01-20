@@ -4,9 +4,9 @@ import json
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 
-from data_structures import Recommendation
+from connection_provider import ConnectionProvider
+from db import DB
 from recommendation_seeker import RecommendationSeeker
-from db import insert_recommendation_into_db, insert_recommendations_if_not_exist
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 
@@ -25,6 +25,7 @@ class DatabaseUpdater:
 
     def __init__(self):
         self.recommendation_response = requests.get(self.RECOMMENDATION_LIST_URL)
+        self.db = DB(ConnectionProvider())
 
     def is_recommendation_service_available(self):
         if self.recommendation_response.status_code != 200 or not self.recommendation_response.text.__contains__(
@@ -42,7 +43,7 @@ class DatabaseUpdater:
         parsed_recommendations = []
         for recommendation in recommendations:
             parsed_recommendations.append(self.recommendation_seeker.find_recommendation(recommendation['id']))
-        insert_recommendations_if_not_exist(parsed_recommendations)
+        self.db.insert_recommendations_if_not_exist(parsed_recommendations)
         self.db_updating = False
 
     def is_db_updating(self):

@@ -13,8 +13,8 @@
             <h1>Клинические рекомендации</h1>
         </div>
         <form class="main" action="/search" method="post">
-            <h2>Коды МКБ-10</h2>
-            <input type="text" name="search_req" class="input" id="input_codes" placeholder="Введите коды МКБ-10"/>
+            <h2>Названия нозологий</h2>
+            <input type="text" name="search_req" class="input" id="input_codes" placeholder="Введите названия нозологий через +"/>
             {% if error_message %}
                 <p>Ошибка создания документа.</p>
                 <p>{{error_message}}</p>
